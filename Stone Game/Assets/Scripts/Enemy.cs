@@ -16,7 +16,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float coolDownTime =2.0f;
     [SerializeField] bool isAlive =true;
     [SerializeField] float moveSpeed= 10f;
-    [SerializeField] PlayerStats player;
+    [SerializeField] Weapon weapon;
     [SerializeField] bool attacking = false;       //serilized for debuging
     [SerializeField] bool chassing = false;       //serilized for debuging
     [SerializeField] Color normalColor;
@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
     bool facingRight =true;
 
     private void Awake() {
-        player = FindObjectOfType<PlayerStats>();
+        weapon = FindObjectOfType<PlayerStats>().GetComponentInChildren<Weapon>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
     }
@@ -40,9 +40,6 @@ public class Enemy : MonoBehaviour
     {
         if(isAlive)
         {
-
-            // RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), detectionRange,1 << LayerMask.NameToLayer("Player"));
-            // Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*detectionRange,Color.red);
             Collider2D chaseCollider = Physics2D.OverlapCircle(transform.position, detectionRange,1 << LayerMask.NameToLayer("Player") );
 
             if(chaseCollider)
@@ -61,15 +58,10 @@ public class Enemy : MonoBehaviour
                 }
             if(Vector2.Distance(transform.position,target.position) > (enemyRange- 0.2f))
             {
-
                 transform.position = Vector2.MoveTowards(transform.position,target.position, moveSpeed *Time.deltaTime);
-                // transform.Translate(Vector2.right * moveSpeed *Time.deltaTime);
-          
             }
         }
 
-        // Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*enemyRange,Color.yellow);
-        // RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), enemyRange,1 << LayerMask.NameToLayer("Player"));
         Collider2D hit = Physics2D.OverlapCircle(transform.position, enemyRange,1 << LayerMask.NameToLayer("Player") );
         if(hit){
             //attack player
@@ -94,11 +86,7 @@ public class Enemy : MonoBehaviour
             healthSlider.value = calculateHealth();
             if(currentHealthPoints <= 0)
             {
-            //Die and give expReward
-            // if(isAlive)
-            // {
                 Die();
-            // }
             }
 
             if(currentHealthPoints > maxHealthPoints)
@@ -127,21 +115,21 @@ public class Enemy : MonoBehaviour
 
         isAlive= false;
         Debug.Log("Dead");
-        Invoke("GivePlayerExp",Random.Range(0.0f, 1f));
+        Invoke("GiveWeaponExp",Random.Range(0.0f, 1f));
         // player.GetExp(expReward);
         //do vfx and sfx
         Invoke("DeathColor",0.3f);
         Invoke("killObject",1.1f );
 
- 
     }
+
     void RestoreColor()
     {
         spriteRenderer.color = normalColor;
     }
-        void DeathColor()
+
+    void DeathColor()
     {
-        
         spriteRenderer.color = Color.black;
     }
 
@@ -155,6 +143,7 @@ public class Enemy : MonoBehaviour
         Gizmos.DrawWireSphere(transform.position, detectionRange);
         Gizmos.DrawWireSphere(transform.position, enemyRange);
     }
+    
     void FlipEnemy()
     {
         facingRight = !facingRight;
@@ -171,8 +160,8 @@ public class Enemy : MonoBehaviour
     {
         Destroy(gameObject);
     }
-    void GivePlayerExp()
+    void GiveWeaponExp()
     {
-        player.GetExp(expReward);
+        weapon.GetExp(expReward);
     }
 }

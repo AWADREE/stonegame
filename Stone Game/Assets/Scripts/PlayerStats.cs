@@ -5,78 +5,56 @@ using UnityEngine.UI;
 
 public class PlayerStats : MonoBehaviour
 {   //basic stats
+
+    //[SerializeField] Text mpText;
+    //[SerializeField] float maxMagicPoints =1000f;
+    //[SerializeField] float mpRegin =10f;
+
     [SerializeField] float moveSpeed =10f;
-    [SerializeField] Text hpText;
-    [SerializeField] Text mpText;
-    [SerializeField] Text expText;
-    [SerializeField] Text levelText;
     [SerializeField] float maxHealthPoints =1000f;
-    [SerializeField] float maxMagicPoints =1000f;
-    [SerializeField] float pAtk =50f;
-    [SerializeField] float mpRegin =10f;
     [SerializeField] float hpRegin =10f;
-    [SerializeField] float level =1f;
     [SerializeField] bool isAlive = true;
-    [SerializeField] float exp =0f;
-    [SerializeField] float expNeeded =1000f; //exp needed to level up to next level
-    [SerializeField] float expNeededIncreasePerLevel = 1.25f;
-    [SerializeField] float remaingExp;      //for debuging
-    [SerializeField] float nextLevelExp;    //for debuging
     
-    //current stats serilized for debugging
+    //combat Stats
+    float damage;
+    float atkSpeed;
+    float range;
+    float critChance =0.1f;
+    float critMulti =1.25f;
+
     [SerializeField] float currentHealthPoints;
-    [SerializeField] float currentMagicPoints;
-    
-    //referances
-    // [SerializeField] GameObject healthBarUI;
-    PlayerMovement playerMovement;
+
+    [SerializeField] Text hpText;
     [SerializeField] Slider healthSlider;
-    [SerializeField] Slider magicSlider;
-    [SerializeField] Slider expSlider;
-    [SerializeField] bool haveMagic = true;
+
+    PlayerMovement playerMovement;
     SpriteRenderer spriteRenderer;
+    Weapon weapon;
     float elapsed = 0f;
 
     private void Awake() {
         playerMovement = GetComponent<PlayerMovement>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+
     }
 
     private void Start() {
         //initialising hp and mp
         currentHealthPoints = maxHealthPoints;
-        currentMagicPoints = maxMagicPoints;
         healthSlider.value = calculateHealth();
-        magicSlider.value = calculateMagic();
-
     }
 
     private void Update() 
     {
-        remaingExp = expNeeded-exp;
-        //updating hp bar and mp bar and exp bar
+
         healthSlider.value = calculateHealth();
-        magicSlider.value = calculateMagic();
-        expSlider.value = calculateExp();
+
         UpdateProfileText();
 
         if(currentHealthPoints <= 0)
         {
             Die();
             currentHealthPoints= 0;
-        }
-        if(exp < 0)
-        {
-            exp =0;
-        }
-        if(currentMagicPoints <= 0)
-        {
-            currentMagicPoints = 0;
-            haveMagic = false;
-        }
-        if(currentMagicPoints >0)
-        {
-            haveMagic = true;
         }
 
     //every second effects
@@ -91,29 +69,13 @@ public class PlayerStats : MonoBehaviour
             {
                 HealRegin();
             }
-            if(currentMagicPoints < maxMagicPoints)
-            {
-                ReginMagic();
-            }
         }
     }
 
-
-        //if stats exceeds max
-        if(exp >= expNeeded)
-        {
-            levelup();
-            
-        }
         if(currentHealthPoints > maxHealthPoints)
         {
             currentHealthPoints = maxHealthPoints;
         }
-        if(currentMagicPoints> maxMagicPoints)
-        {
-            currentMagicPoints = maxMagicPoints;
-        }
-
 
     }
 
@@ -125,53 +87,12 @@ public class PlayerStats : MonoBehaviour
     {
         currentHealthPoints += hpRegin;
     }
-    void ReginMagic()
-    {
-        currentMagicPoints += mpRegin;
-    }
-
-    float calculateExp()
-    {
-        return exp/ expNeeded;
-    }
 
     float calculateHealth()
     {
         return currentHealthPoints/ maxHealthPoints;
     }
 
-    float calculateMagic()
-    {
-        return currentMagicPoints/ maxMagicPoints;
-    }
-
-
-    void levelup ()
-    {
-        level++;
-        exp = 0;
-        expNeeded *= expNeededIncreasePerLevel;
-    }
-
-    public void GetExp(float expReward)
-    {
-        if(remaingExp > expReward)
-        {
-            exp +=expReward;
-        }
-        else
-        {
-           nextLevelExp = expReward - remaingExp;
-           levelup();
-           
-            GetRestOfExp();
-            //get exp
-
-
-
-
-        }
-    }
     public float GetMoveSpeed()
     {
         return moveSpeed;
@@ -184,21 +105,22 @@ public class PlayerStats : MonoBehaviour
     {
         return currentHealthPoints;
     }
-    
-    public float GetCurrentMP()
-    {
-        return currentMagicPoints;
-    }
-    public float GetMaxMP()
-    {
-        return maxHealthPoints;
-    }
-    public float GetPDamage()
+
+    public float GetDamage()
     {
         //return calculated damge, its just the pAtk for now
-        return pAtk;
+        return damage;
     }
 
+    public float GetRng()
+    {
+        return range;
+    }
+
+    public float GetAtkSpeed()
+    {
+        return atkSpeed;
+    }
 
     public void TakeDamage(float damage)
     {
@@ -207,22 +129,10 @@ public class PlayerStats : MonoBehaviour
             currentHealthPoints -= damage;
         }
     }
-    
-    public void SpendMagic(float magicCost)
-    {
-        if(isAlive && haveMagic)
-        {
-            currentMagicPoints -= magicCost;
-        }
-    }
-    
 
     void UpdateProfileText()
     {
         hpText.text = (currentHealthPoints.ToString()+"/"+maxHealthPoints.ToString());
-        mpText.text = (currentMagicPoints.ToString()+"/"+maxMagicPoints.ToString());
-        expText.text = ((expSlider.value*100).ToString("F2")+"%");
-        levelText.text = level.ToString();
     }
     void Die(){
         isAlive = false;
@@ -235,29 +145,22 @@ public class PlayerStats : MonoBehaviour
         spriteRenderer.color = Color.black;
     }
 
-    public bool HaveMagic(float magicCost)
+    //function that calculates combat stats and return damage, range, and atkSpeed
+    public float[] CalculatedCombatStats()
     {
-        if(currentMagicPoints>= magicCost)
-        {
-            haveMagic=true;
-            return haveMagic;
-        }
-        else
-        {
-            haveMagic=false;
-            return haveMagic;
-        }
-    }
+        weapon = GetComponentInChildren<Weapon>();
+        float[] stats = new float[3];
+        float tempDamage;
 
-    void GetRestOfExp()
-    {
-        if(nextLevelExp > expNeeded*2f)
-        {
-            nextLevelExp = expNeeded*2f;
-        }
-        else
-        {
-            exp+=nextLevelExp;
-        }
+        tempDamage = weapon.GetDamage();
+        //get and calculate combat style damage and total dmg
+
+        range = weapon.GetRng();
+        atkSpeed = weapon.GetSpeed();
+
+        stats[0]= tempDamage;
+        stats[1]= range;
+        stats[2]= atkSpeed;
+        return stats;
     }
 }
