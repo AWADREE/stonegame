@@ -12,25 +12,30 @@ public class Enemy : MonoBehaviour
     [SerializeField] float expReward =10f;
     [SerializeField] float damage =75f;
     [SerializeField] float enemyRange = 10f;
+    [SerializeField] float initiateAtkRange = 10f;
     [SerializeField] float detectionRange= 10f;
-    [SerializeField] float coolDownTime =2.0f;
+    [SerializeField] float atkWindUpTime =2.0f;
     [SerializeField] bool isAlive =true;
     [SerializeField] float moveSpeed= 10f;
     [SerializeField] float pushBackForce;
     [SerializeField] float pushUpForce;
     [SerializeField] Weapon weapon;
-    [SerializeField] bool attacking = false;       //serilized for debuging
     [SerializeField] bool chassing = false;       //serilized for debuging
     [SerializeField] Color normalColor;
     Transform target;
     SpriteRenderer spriteRenderer;
     bool facingRight =true;
 
-    private void Awake() {
+    bool finishedAttacking = true;
+    bool attacking = false;
+
+    private void Awake() 
+    {
         weapon = FindObjectOfType<PlayerStats>().GetComponentInChildren<Weapon>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
     }
+
     void Start()
     {
         currentHealthPoints = maxHealthPoints;
@@ -58,37 +63,27 @@ public class Enemy : MonoBehaviour
                     //flip enemy
                     FlipEnemy();
                 }
-            if(Vector2.Distance(transform.position,target.position) > (enemyRange- 0.2f))
-            {
-                transform.position = Vector2.MoveTowards(transform.position,target.position, moveSpeed *Time.deltaTime);
+                if(Vector2.Distance(transform.position,target.position) > (enemyRange- 0.2f))
+                {
+                    transform.position = Vector2.MoveTowards(transform.position,target.position, moveSpeed *Time.deltaTime);
+                }
             }
-        }
 
-        //Collider2D hit = Physics2D.OverlapCircle(transform.position, enemyRange,1 << LayerMask.NameToLayer("Player"));
-        //used CircleCast insteam of OverlapCircle to be able to use contact point, and set the didtance to 0.0f so that it wouldnt move
-        RaycastHit2D hit = Physics2D.CircleCast(transform.position, enemyRange, transform.position,0.0f,1 << LayerMask.NameToLayer("Player"));
+            //Collider2D hit = Physics2D.OverlapCircle(transform.position, enemyRange,1 << LayerMask.NameToLayer("Player"));
+            //used CircleCast insteam of OverlapCircle to be able to use contact point, and set the didtance to 0.0f so that it wouldnt move
 
-        if(hit){
-            //attack player
-            if(!attacking)
+            //check if player in atk range
+            RaycastHit2D hit = Physics2D.CircleCast(transform.position, initiateAtkRange, transform.position,0.0f,1 << LayerMask.NameToLayer("Player"));
+            if(hit)
             {
-                //attack
-                attacking= true;
-                hit.transform.GetComponent<PlayerStats>().TakeDamage(damage);
-                // hit.transform.GetComponentInChildren<SpriteRenderer>().color = Color.yellow;
-
-                //apply force in the oposite direction the cated ray hit
-                Vector2 hitPointv= new Vector2();
-                hitPointv = transform.position;
-                Vector2 dir = hit.point - hitPointv;
-                dir = dir.normalized;
-                hit.transform.GetComponent<Rigidbody2D>().AddForce(dir*pushBackForce);
-                hit.transform.GetComponent<Rigidbody2D>().AddForce(Vector2.up *pushUpForce);
-
-                Invoke("nextAttack",coolDownTime);
+                if(finishedAttacking)
+                {   
+                    //started attacking, as long as this is false means that we are still attacking and the invoke will not be called in update
+                    finishedAttacking = false;
+                    attacking = true; //for debugging
+                    Invoke("StartAttacking",atkWindUpTime);
+                }
             }
-        }
-
 
             if(currentHealthPoints < maxHealthPoints)
             {
@@ -106,6 +101,7 @@ public class Enemy : MonoBehaviour
             {
                 currentHealthPoints = maxHealthPoints;
             }
+
         }
     }
 
@@ -146,23 +142,18 @@ public class Enemy : MonoBehaviour
         spriteRenderer.color = Color.black;
     }
 
-    void nextAttack()
-    {
-        attacking = false;
-    }
 
     private void OnDrawGizmos() {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, detectionRange);
-        Gizmos.DrawWireSphere(transform.position, enemyRange);
+       Gizmos.color = Color.red;
+       Gizmos.DrawWireSphere(transform.position, detectionRange);
+       Gizmos.DrawWireSphere(transform.position, initiateAtkRange);
+       Gizmos.DrawWireSphere(transform.position, enemyRange);
     }
-    
+
     void FlipEnemy()
     {
         facingRight = !facingRight;
-        Vector3 tmpScale = gameObject.transform.localScale;
-        tmpScale.x *= -1;
-        gameObject.transform.localScale = tmpScale;
+        transform.Rotate(0f, 180f, 0f);
     }
 
     public bool IsEnemyAlive()
@@ -177,4 +168,30 @@ public class Enemy : MonoBehaviour
     {
         weapon.GetExp(expReward);
     }
+
+
+    void StartAttacking()
+    {
+        Debug.DrawRay(GetComponentInChildren<EnemyHand>().transform.position,transform.TransformDirection(Vector2.right)*enemyRange,Color.red);
+        RaycastHit2D attackHit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), enemyRange, 1 << LayerMask.NameToLayer("Player"));
+
+        if(attackHit)
+        {            
+            attackHit.transform.GetComponent<PlayerStats>().TakeDamage(damage);
+            //apply force in the oposite direction the cated ray hit
+            Vector2 hitPointv= new Vector2();
+            hitPointv = transform.position;
+            Vector2 dir = attackHit.point - hitPointv;
+            dir = dir.normalized;
+                
+            Rigidbody2D rigid = attackHit.transform.GetComponent<Rigidbody2D>();//ref
+            rigid.AddForce(dir*pushBackForce);
+            rigid.AddForce(Vector2.up *pushUpForce);
+        }
+        attacking = false;//for debugging
+        Debug.Log("finished attacking");
+        finishedAttacking = true;
+    }
+
+
 }

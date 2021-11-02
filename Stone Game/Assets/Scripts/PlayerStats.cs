@@ -4,13 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class PlayerStats : MonoBehaviour
-{   //basic stats
+{   
+    //basic stats
 
-    //[SerializeField] Text mpText;
-    //[SerializeField] float maxMagicPoints =1000f;
-    //[SerializeField] float mpRegin =10f;
+    //[SerializeField] float moveSpeed =10f;
 
-    [SerializeField] float moveSpeed =10f;
     [SerializeField] float maxHealthPoints =1000f;
     [SerializeField] float hpRegin =10f;
     [SerializeField] bool isAlive = true;
@@ -93,10 +91,11 @@ public class PlayerStats : MonoBehaviour
         return currentHealthPoints/ maxHealthPoints;
     }
 
-    public float GetMoveSpeed()
-    {
-        return moveSpeed;
-    }
+    //public float GetMoveSpeed()
+    //{
+    //    return moveSpeed;
+    //}
+    
     public float GetMaxHP()
     {
         return maxHealthPoints;

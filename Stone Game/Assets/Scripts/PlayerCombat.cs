@@ -10,6 +10,7 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] Color normalColor;
     [SerializeField] float pushBackForce;
     [SerializeField] float pushUpForce;
+    [SerializeField] float recoilForce;
     
     float damage;
     float range;
@@ -47,8 +48,14 @@ public class PlayerCombat : MonoBehaviour
                 hitPointv = transform.position;
                 Vector2 dir = hit[i].point - hitPointv;
                 dir = dir.normalized;
-                hit[i].transform.GetComponent<Rigidbody2D>().AddForce(dir*pushBackForce);
-                hit[i].transform.GetComponent<Rigidbody2D>().AddForce(Vector2.up *pushUpForce);
+
+                Rigidbody2D rigid = hit[i].transform.GetComponent<Rigidbody2D>();//ref
+                rigid.AddForce(dir*pushBackForce);
+                rigid.AddForce(Vector2.up *pushUpForce);
+
+                GetComponent<Rigidbody2D>().AddForce(-dir.normalized*recoilForce);
+
+
             }
         }
     }

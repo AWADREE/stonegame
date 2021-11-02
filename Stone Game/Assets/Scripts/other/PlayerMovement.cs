@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         playerStats = GetComponent<PlayerStats>();
-        moveSpeed = playerStats.GetMoveSpeed();
+        //moveSpeed = playerStats.GetMoveSpeed();
         
     }
 
@@ -38,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void MoveCharacter()
     {
-        moveSpeed = playerStats.GetMoveSpeed();
+        //moveSpeed = playerStats.GetMoveSpeed();
 
         if (moveDirection > 0 && !facingRight)
         {
