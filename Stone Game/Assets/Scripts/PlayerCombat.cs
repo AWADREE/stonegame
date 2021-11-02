@@ -8,6 +8,8 @@ public class PlayerCombat : MonoBehaviour
     LayerMask EnemyLayer;
     SpriteRenderer spriteRenderer;
     [SerializeField] Color normalColor;
+    [SerializeField] float pushBackForce;
+    [SerializeField] float pushUpForce;
     
     float damage;
     float range;
@@ -38,7 +40,15 @@ public class PlayerCombat : MonoBehaviour
             for (int i = 0; i < hit.Length; i++)
             {
                 //cast skill
-                hit[i].transform.GetComponent<Enemy>().TakeDamage(damage); 
+                hit[i].transform.GetComponent<Enemy>().TakeDamage(damage);
+
+                //apply force in the oposite direction the cated ray hit
+                Vector2 hitPointv= new Vector2();
+                hitPointv = transform.position;
+                Vector2 dir = hit[i].point - hitPointv;
+                dir = dir.normalized;
+                hit[i].transform.GetComponent<Rigidbody2D>().AddForce(dir*pushBackForce);
+                hit[i].transform.GetComponent<Rigidbody2D>().AddForce(Vector2.up *pushUpForce);
             }
         }
     }

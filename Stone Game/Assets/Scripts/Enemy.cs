@@ -16,6 +16,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] float coolDownTime =2.0f;
     [SerializeField] bool isAlive =true;
     [SerializeField] float moveSpeed= 10f;
+    [SerializeField] float pushBackForce;
+    [SerializeField] float pushUpForce;
     [SerializeField] Weapon weapon;
     [SerializeField] bool attacking = false;       //serilized for debuging
     [SerializeField] bool chassing = false;       //serilized for debuging
@@ -62,7 +64,10 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        Collider2D hit = Physics2D.OverlapCircle(transform.position, enemyRange,1 << LayerMask.NameToLayer("Player") );
+        //Collider2D hit = Physics2D.OverlapCircle(transform.position, enemyRange,1 << LayerMask.NameToLayer("Player"));
+        //used CircleCast insteam of OverlapCircle to be able to use contact point, and set the didtance to 0.0f so that it wouldnt move
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, enemyRange, transform.position,0.0f,1 << LayerMask.NameToLayer("Player"));
+
         if(hit){
             //attack player
             if(!attacking)
@@ -71,10 +76,18 @@ public class Enemy : MonoBehaviour
                 attacking= true;
                 hit.transform.GetComponent<PlayerStats>().TakeDamage(damage);
                 // hit.transform.GetComponentInChildren<SpriteRenderer>().color = Color.yellow;
+
+                //apply force in the oposite direction the cated ray hit
+                Vector2 hitPointv= new Vector2();
+                hitPointv = transform.position;
+                Vector2 dir = hit.point - hitPointv;
+                dir = dir.normalized;
+                hit.transform.GetComponent<Rigidbody2D>().AddForce(dir*pushBackForce);
+                hit.transform.GetComponent<Rigidbody2D>().AddForce(Vector2.up *pushUpForce);
+
                 Invoke("nextAttack",coolDownTime);
             }
         }
-
 
 
             if(currentHealthPoints < maxHealthPoints)
