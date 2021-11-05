@@ -7,12 +7,10 @@ public class PlayerStats : MonoBehaviour
 {   
     //basic stats
 
-    //[SerializeField] float moveSpeed =10f;
-
     [SerializeField] float maxHealthPoints =1000f;
     [SerializeField] float hpRegin =10f;
     [SerializeField] bool isAlive = true;
-    
+    [SerializeField] int currency = 0; //serialized for debugging 
     //combat Stats
     float damage;
     float atkSpeed;
@@ -25,13 +23,13 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] Text hpText;
     [SerializeField] Slider healthSlider;
 
-    PlayerMovement playerMovement;
+    PlayerMovementController playerMovement;
     SpriteRenderer spriteRenderer;
     Weapon weapon;
     float elapsed = 0f;
 
     private void Awake() {
-        playerMovement = GetComponent<PlayerMovement>();
+        playerMovement = GetComponent<PlayerMovementController>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 
     }
@@ -55,20 +53,20 @@ public class PlayerStats : MonoBehaviour
             currentHealthPoints= 0;
         }
 
-    //every second effects
-    if(isAlive)
-    {
-        elapsed += Time.deltaTime;
-        if (elapsed >= 1f) 
+        //every second effects
+        if(isAlive)
         {
-            elapsed = elapsed % 1f;
-
-            if(currentHealthPoints < maxHealthPoints)
+            elapsed += Time.deltaTime;
+            if (elapsed >= 1f) 
             {
-                HealRegin();
+                elapsed = elapsed % 1f;
+
+                if(currentHealthPoints < maxHealthPoints)
+                {
+                    HealRegin();
+                }
             }
         }
-    }
 
         if(currentHealthPoints > maxHealthPoints)
         {
@@ -90,11 +88,6 @@ public class PlayerStats : MonoBehaviour
     {
         return currentHealthPoints/ maxHealthPoints;
     }
-
-    //public float GetMoveSpeed()
-    //{
-    //    return moveSpeed;
-    //}
     
     public float GetMaxHP()
     {
@@ -147,19 +140,44 @@ public class PlayerStats : MonoBehaviour
     //function that calculates combat stats and return damage, range, and atkSpeed
     public float[] CalculatedCombatStats()
     {
-        weapon = GetComponentInChildren<Weapon>();
-        float[] stats = new float[3];
-        float tempDamage;
 
-        tempDamage = weapon.GetDamage();
-        //get and calculate combat style damage and total dmg
+        Component[] weapons;
+        weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
+        foreach (Weapon weaponTemp in weapons)
+        {
+            if(weaponTemp.IsEquiped())
+            {
+                weapon = weaponTemp;
+            }
+        }
 
-        range = weapon.GetRng();
-        atkSpeed = weapon.GetSpeed();
+        if(weapon != null)
+        {
+            float[] stats = new float[3];
+            float tempDamage;
 
-        stats[0]= tempDamage;
-        stats[1]= range;
-        stats[2]= atkSpeed;
-        return stats;
+            tempDamage = weapon.GetDamage();
+            //get and calculate combat style damage and total dmg
+
+            range = weapon.GetRng();
+            atkSpeed = weapon.GetSpeed();
+
+            stats[0]= tempDamage;
+            stats[1]= range;
+            stats[2]= atkSpeed;
+            return stats;
+
+        }
+        else
+        {
+            float[] emptyFloatArray = new float[3];
+            return emptyFloatArray;
+        }
+    }
+
+    // increase moeny
+    public void IncreaseCurrencyBy(int newCurrency)
+    {
+        currency += newCurrency;
     }
 }

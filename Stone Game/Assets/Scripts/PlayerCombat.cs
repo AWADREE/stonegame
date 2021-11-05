@@ -92,8 +92,9 @@ public class PlayerCombat : MonoBehaviour
     }
 
     //make public later to call whenever stats update is needed
-    void GetStats()
+    public void GetStats()
     {
+        //get stats
         damage = playerStats.CalculatedCombatStats()[0];
         range = playerStats.CalculatedCombatStats()[1];
         atkSpeed = playerStats.CalculatedCombatStats()[2];

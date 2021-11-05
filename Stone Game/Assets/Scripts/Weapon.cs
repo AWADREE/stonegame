@@ -44,22 +44,33 @@ public class Weapon : MonoBehaviour
 
     private void Update() 
     {
-        ConnectUI();
-
-        remaingExp = expNeeded-exp;
-        //updating hp bar and mp bar and exp bar
-        expSlider.value = calculateExp();
-        UpdateProfileText();
-
-        if(exp < 0)
+        if(equiped)
         {
-            exp =0;
+            ConnectUI();
+
+            remaingExp = expNeeded-exp;
+            //updating hp bar and mp bar and exp bar
+            expSlider.value = calculateExp();
+            UpdateProfileText();
+
+            if(exp < 0)
+            {
+                exp =0;
+            }
+
+            //if stats exceeds max
+            if(exp >= expNeeded)
+            {
+                levelup();
+            }
+
         }
-
-        //if stats exceeds max
-        if(exp >= expNeeded)
+        else
         {
-            levelup();
+            if(GetComponentInParent<PlayerStats>())
+            {
+                GetComponent<SpriteRenderer>().enabled = false;
+            }
         }
     }
 
@@ -129,6 +140,21 @@ public class Weapon : MonoBehaviour
     }
 
     //public variable access
+
+    public bool IsEquiped()
+    {
+        return equiped;
+    }
+
+    public void GetEquiped()
+    {
+        equiped = true;
+    }
+
+    public void GetUnequiped()
+    {
+        equiped = false;
+    }
 
     public float GetSpeed()
     {

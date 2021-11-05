@@ -9,6 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3624141575374039439}
+  - component: {fileID: 2074306305}
   m_Layer: 9
   m_Name: hand
   m_TagString: Untagged
@@ -24,12 +25,24 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2872776260796396266}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0.495, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7940761881145412711}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2074306305
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2872776260796396266}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e506ccca8ad18654a9145ccb0cb9d23a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7940761881145412707
 GameObject:
   m_ObjectHideFlags: 0
@@ -42,9 +55,9 @@ GameObject:
   - component: {fileID: 7940761881145412704}
   - component: {fileID: 7940761881145412705}
   - component: {fileID: 7940761881145412706}
-  - component: {fileID: 7940761881145412710}
   - component: {fileID: 7940761881145412709}
   - component: {fileID: 7940761881145412708}
+  - component: {fileID: 1019314272}
   m_Layer: 9
   m_Name: player
   m_TagString: Player
@@ -108,7 +121,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 08de280cd7b2c8b49bd611bc1f9f89d5, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.22352941, g: 0.24313726, b: 0.27450982, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -127,7 +140,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 7940761881145412707}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 93c61421ff0d4de4b82bbf983efd7ade, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -159,25 +172,12 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 9
   m_Material: {fileID: 0}
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_Interpolate: 1
+  m_SleepingMode: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
---- !u!114 &7940761881145412710
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7940761881145412707}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f62d1dc28834608479cb8797129bc508, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canMove: 1
 --- !u!114 &7940761881145412709
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -190,10 +190,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a017c32e9245d4f448db3e605590fe06, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 10
-  maxHealthPoints: 20000
+  maxHealthPoints: 10000
   hpRegin: 1
   isAlive: 1
+  currency: 0
   currentHealthPoints: 0
   hpText: {fileID: 0}
   healthSlider: {fileID: 0}
@@ -210,3 +210,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normalColor: {r: 0, g: 0, b: 0, a: 0}
+  pushBackForce: 300
+  pushUpForce: 500
+  recoilForce: 200
+--- !u!114 &1019314272
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7940761881145412707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b03d38126102bc48a869f8c968d830f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lmWalls:
+    serializedVersion: 2
+    m_Bits: 1024
+  fJumpVelocity: 38
+  fJumpPressedRememberTime: 0.2
+  fGroundedRememberTime: 0.2
+  fHorizontalAcceleration: 8
+  fHorizontalDampingBasic: 0.5
+  fHorizontalDampingWhenStopping: 0.5
+  fHorizontalDampingWhenTurning: 0.5
+  fCutJumpHeight: 0.5
+  groundBoxYPos: -1.12
+  groundBoxXScal: -0.3
