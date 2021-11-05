@@ -29,35 +29,21 @@ public class PlayerCombat : MonoBehaviour
     }
 
     void Update()
-    {
+    {   
 
-        //aoe damging abilites
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if(Input.GetKey(KeyCode.W)&& Input.GetKeyDown(KeyCode.Alpha1))
         {
-            Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*range,Color.red);
-            //use skill range
-            RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(Vector2.right), range, 1 << LayerMask.NameToLayer("Enemy"));
-
-            for (int i = 0; i < hit.Length; i++)
-            {
-                //cast skill
-                hit[i].transform.GetComponent<Enemy>().TakeDamage(damage);
-
-                //apply force in the oposite direction the cated ray hit
-                Vector2 hitPointv= new Vector2();
-                hitPointv = transform.position;
-                Vector2 dir = hit[i].point - hitPointv;
-                dir = dir.normalized;
-
-                Rigidbody2D rigid = hit[i].transform.GetComponent<Rigidbody2D>();//ref
-                rigid.AddForce(dir*pushBackForce);
-                rigid.AddForce(Vector2.up *pushUpForce);
-
-                GetComponent<Rigidbody2D>().AddForce(-dir.normalized*recoilForce);
-
-
-            }
+            DamageAllInDirection(Vector2.up );
         }
+        else if(Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            DamageAllInDirection(Vector2.down);
+        }
+        else if(Input.GetKey(KeyCode.Alpha1) && Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            DamageAllInDirection(Vector2.right);
+        }
+
     }
 
     public float TakeDamage(float damage)
@@ -73,15 +59,36 @@ public class PlayerCombat : MonoBehaviour
         spriteRenderer.color = normalColor;
     }
 
-    void attack()
-    {
-        //cast ray and use range and cast skill
-    }
-
     void DealPysicalDamage(Enemy enemy)
     {
         enemy.TakeDamage(damage);
 
+    }
+
+    void DamageAllInDirection(Vector2 direction)
+    {
+        Debug.DrawRay(transform.position,transform.TransformDirection(direction)*range,Color.red);
+        //use skill range
+        RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(direction), range, 1 << LayerMask.NameToLayer("Enemy"));
+
+        for (int i = 0; i < hit.Length; i++)
+        {
+            //cast skill
+            hit[i].transform.GetComponent<Enemy>().TakeDamage(damage);
+
+            //apply force in the oposite direction the cated ray hit
+            Vector2 hitPointv= new Vector2();
+            hitPointv = transform.position;
+            Vector2 dir = hit[i].point - hitPointv;
+            dir = dir.normalized;
+
+            Rigidbody2D rigid = hit[i].transform.GetComponent<Rigidbody2D>();//ref
+            rigid.AddForce(dir*pushBackForce);
+            rigid.AddForce(Vector2.up *pushUpForce);
+
+            GetComponent<Rigidbody2D>().AddForce(-dir.normalized*recoilForce);
+
+        }
     }
 
     //make public later to call whenever stats update is needed
