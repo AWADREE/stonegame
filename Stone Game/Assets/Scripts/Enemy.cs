@@ -120,10 +120,20 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    void Die(){
+    void Die()
+    {
+        // weapon = FindObjectOfType<PlayerStats>().GetComponentInChildren<Weapon>();
+        Component[] weapons;
+        weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
+        foreach (Weapon weaponTemp in weapons)
+        {
+            if(weaponTemp.IsEquiped())
+            {
+                weapon = weaponTemp;
+            }
+        }
 
         isAlive= false;
-        Debug.Log("Dead");
         Invoke("GiveWeaponExp",Random.Range(0.0f, 1f));
         // player.GetExp(expReward);
         //do vfx and sfx
@@ -189,7 +199,6 @@ public class Enemy : MonoBehaviour
             rigid.AddForce(Vector2.up *pushUpForce);
         }
         attacking = false;//for debugging
-        Debug.Log("finished attacking");
         finishedAttacking = true;
     }
 
