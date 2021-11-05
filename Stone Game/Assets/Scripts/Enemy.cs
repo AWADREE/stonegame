@@ -25,12 +25,13 @@ public class Enemy : MonoBehaviour
     Transform target;
     SpriteRenderer spriteRenderer;
     bool facingRight =true;
-
+    EnemyHand enemyHand;
     bool finishedAttacking = true;
     bool attacking = false;
 
     private void Awake() 
     {
+        enemyHand = GetComponentInChildren<EnemyHand>();
         weapon = FindObjectOfType<PlayerStats>().GetComponentInChildren<Weapon>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
@@ -183,7 +184,8 @@ public class Enemy : MonoBehaviour
     void StartAttacking()
     {
         Debug.DrawRay(GetComponentInChildren<EnemyHand>().transform.position,transform.TransformDirection(Vector2.right)*enemyRange,Color.red);
-        RaycastHit2D attackHit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), enemyRange, 1 << LayerMask.NameToLayer("Player"));
+        // RaycastHit2D attackHit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), enemyRange, 1 << LayerMask.NameToLayer("Player"));
+        RaycastHit2D attackHit = Physics2D.Raycast(transform.position, enemyHand.transform.position - transform.position, enemyRange, 1 << LayerMask.NameToLayer("Player"));
 
         if(attackHit)
         {            
