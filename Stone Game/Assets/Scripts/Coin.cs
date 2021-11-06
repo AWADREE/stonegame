@@ -5,17 +5,10 @@ using UnityEngine;
 public class Coin : MonoBehaviour
 {
     [SerializeField] int value;
-   
 
-    public int GetCoinValue()
+    public void GetPickedUp()
     {
-        return value;
-    }
-    
-    public void DestroyCoin()
-    {
+        FindObjectOfType<PlayerStats>().IncreaseCurrencyBy(value);
         Destroy(gameObject);
     }
-
-
 }

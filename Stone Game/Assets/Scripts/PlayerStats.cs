@@ -12,6 +12,7 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] bool isAlive = true;
     [SerializeField] int currency = 0; //serialized for debugging 
     //combat Stats
+    float baseDamage;
     float damage;
     float atkSpeed;
     float range;
@@ -27,11 +28,13 @@ public class PlayerStats : MonoBehaviour
     SpriteRenderer spriteRenderer;
     Weapon weapon;
     float elapsed = 0f;
+    PlayerCombat playerCombat;
+
 
     private void Awake() {
         playerMovement = GetComponent<PlayerMovementController>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-
+        playerCombat = GetComponent<PlayerCombat>();
     }
 
     private void Start() {
@@ -45,7 +48,7 @@ public class PlayerStats : MonoBehaviour
 
         healthSlider.value = calculateHealth();
 
-        UpdateProfileText();
+        UpdateHPText();
 
         if(currentHealthPoints <= 0)
         {
@@ -122,10 +125,12 @@ public class PlayerStats : MonoBehaviour
         }
     }
 
-    void UpdateProfileText()
+    //update HP profile text
+    void UpdateHPText()
     {
         hpText.text = (currentHealthPoints.ToString()+"/"+maxHealthPoints.ToString());
     }
+
     void Die(){
         isAlive = false;
         playerMovement.StopMoving();
@@ -138,46 +143,83 @@ public class PlayerStats : MonoBehaviour
     }
 
     //function that calculates combat stats and return damage, range, and atkSpeed
-    public float[] CalculatedCombatStats()
-    {
+    // public float[] CalculatedCombatStats()
+    // {
 
-        Component[] weapons;
-        weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
-        foreach (Weapon weaponTemp in weapons)
-        {
-            if(weaponTemp.IsEquiped())
-            {
-                weapon = weaponTemp;
-            }
-        }
+    //     Component[] weapons;
+    //     weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
+    //     foreach (Weapon weaponTemp in weapons)
+    //     {
+    //         if(weaponTemp.IsEquiped())
+    //         {
+    //             weapon = weaponTemp;
+    //         }
+    //     }
 
-        if(weapon != null)
-        {
-            float[] stats = new float[3];
-            float tempDamage;
+    //     if(weapon != null)
+    //     {
+    //         float[] stats = new float[3];
+    //         float tempDamage;
 
-            tempDamage = weapon.GetDamage();
-            //get and calculate combat style damage and total dmg
+    //         tempDamage = weapon.GetDamage();
+    //         //get and calculate combat style damage and total dmg
 
-            range = weapon.GetRng();
-            atkSpeed = weapon.GetSpeed();
+    //         range = weapon.GetRng();
+    //         atkSpeed = weapon.GetSpeed();
 
-            stats[0]= tempDamage;
-            stats[1]= range;
-            stats[2]= atkSpeed;
-            return stats;
+    //         stats[0]= tempDamage;
+    //         stats[1]= range;
+    //         stats[2]= atkSpeed;
+    //         return stats;
 
-        }
-        else
-        {
-            float[] emptyFloatArray = new float[3];
-            return emptyFloatArray;
-        }
-    }
+    //     }
+    //     else
+    //     {
+    //         float[] emptyFloatArray = new float[3];
+    //         return emptyFloatArray;
+    //     }
+    // }
 
     // increase moeny
     public void IncreaseCurrencyBy(int newCurrency)
     {
         currency += newCurrency;
+    }
+
+
+    //update this script stats then calculate total and send it to playercombat ststs
+
+    // void CalculateAndUpdateCombatStats()
+    // {
+    //     //calculate total damage
+    //     // damage = baseDamage*(critChance*critMulti);
+    //     damage = baseDamage;
+    //     playerCombat.SetTotalDamage(damage);
+    //     //calculate range and set it
+    //     playerCombat.SetRange(range);
+    //     //calculate atkSpeed and set it
+    //     playerCombat.SetAtkSpeed(atkSpeed);
+    // }
+
+    public void SetBaseDamage(float weaponDamage)
+    {
+        baseDamage = weaponDamage;
+        //calculate total damage
+        // damage = baseDamage*(critChance*critMulti);
+        damage = baseDamage;
+        playerCombat.SetTotalDamage(damage);
+        // CalculateAndUpdateCombatStats();
+    }
+    public void SetRange(float weaponRange)
+    {
+        range = weaponRange;
+        playerCombat.SetRange(range);
+        // CalculateAndUpdateCombatStats();
+    }
+    public void SetatkSpeed(float weaponatkSpeed)
+    {
+        atkSpeed = weaponatkSpeed;
+        playerCombat.SetAtkSpeed(atkSpeed);
+        // CalculateAndUpdateCombatStats();
     }
 }

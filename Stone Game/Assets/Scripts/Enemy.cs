@@ -19,7 +19,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] float moveSpeed= 10f;
     [SerializeField] float pushBackForce;
     [SerializeField] float pushUpForce;
-    [SerializeField] Weapon weapon;
+    [SerializeField] Weapon weapon; //serizlised for debugging
     [SerializeField] bool chassing = false;       //serilized for debuging
     [SerializeField] Color normalColor;
     Transform target;
