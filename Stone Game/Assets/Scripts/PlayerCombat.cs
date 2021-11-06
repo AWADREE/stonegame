@@ -19,7 +19,7 @@ public class PlayerCombat : MonoBehaviour
     private void Awake() 
     {
         playerStats = GetComponent<PlayerStats>();
-        GetStats();
+        // GetStats();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
     }
@@ -31,15 +31,15 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {   
 
-        if(Input.GetKey(KeyCode.W)&& Input.GetKeyDown(KeyCode.Alpha1))
+        if((Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow))&& Input.GetKeyDown(KeyCode.X))
         {
             DamageAllInDirection(Vector2.up );
         }
-        else if(Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.Alpha1))
+        else if((Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.X))
         {
             DamageAllInDirection(Vector2.down);
         }
-        else if(Input.GetKey(KeyCode.Alpha1) && Input.GetKeyDown(KeyCode.Alpha1))
+        else if(Input.GetKeyDown(KeyCode.X))
         {
             DamageAllInDirection(Vector2.right);
         }
@@ -91,12 +91,26 @@ public class PlayerCombat : MonoBehaviour
         }
     }
 
-    //make public later to call whenever stats update is needed
-    public void GetStats()
+    public void SetTotalDamage(float totalDamage)
     {
-        //get stats
-        damage = playerStats.CalculatedCombatStats()[0];
-        range = playerStats.CalculatedCombatStats()[1];
-        atkSpeed = playerStats.CalculatedCombatStats()[2];
+        damage = totalDamage;
     }
+    public void SetRange(float totalRange)
+    {
+        range = totalRange;
+    }
+    public void SetAtkSpeed(float totalAtkSpeed)
+    {
+        atkSpeed = totalAtkSpeed;
+    }
+
+    //make public later to call whenever stats update is needed
+    // public void GetStats()
+    // {
+    //     //get stats
+    //     damage = playerStats.CalculatedCombatStats()[0];
+    //     range = playerStats.CalculatedCombatStats()[1];
+    //     atkSpeed = playerStats.CalculatedCombatStats()[2];
+    // }
+
 }

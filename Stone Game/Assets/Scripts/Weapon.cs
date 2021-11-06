@@ -31,10 +31,14 @@ public class Weapon : MonoBehaviour
     [SerializeField] float expNeededIncreasePerLevel = 1.25f;
     [SerializeField] float remaingExp;      //for debuging
     [SerializeField] float nextLevelExp;    //for debuging
+    Transform playerHand;
 
+    PlayerStats playerStats;
 
     private void Awake() 
     {
+        playerStats = FindObjectOfType<PlayerStats>();
+        playerHand = FindObjectOfType<PlayerHand>().transform;
         if(GetComponentInParent<PlayerStats>() != null)
         {
             equiped = true;
@@ -49,7 +53,7 @@ public class Weapon : MonoBehaviour
             ConnectUI();
 
             remaingExp = expNeeded-exp;
-            //updating hp bar and mp bar and exp bar
+            //updating UI
             expSlider.value = calculateExp();
             UpdateProfileText();
 
@@ -88,8 +92,10 @@ public class Weapon : MonoBehaviour
     void levelup ()
     {
         level++;
+        baseDmg +=20f;
         exp = 0;
         expNeeded *= expNeededIncreasePerLevel;
+        sendWeaponStats();
     }
 
     public void GetExp(float expReward)
@@ -122,55 +128,85 @@ public class Weapon : MonoBehaviour
 
     void ConnectUI()
     {
-        if(equiped)
-        {
 
-            if (uIConnected)
-            {
-                return;
-            }
-            else
-            { 
-                expSlider = GameObject.Find("EXP Slider").GetComponent<Slider>();
-                expText = GameObject.Find("EXPText").GetComponent<Text>();
-                levelText = GameObject.Find("LevelText").GetComponent<Text>();
-                uIConnected = true;
-            }
+        if (uIConnected)
+        {
+            return;
         }
+        else
+        { 
+            expSlider = GameObject.Find("EXP Slider").GetComponent<Slider>();
+            expText = GameObject.Find("EXPText").GetComponent<Text>();
+            levelText = GameObject.Find("LevelText").GetComponent<Text>();
+            uIConnected = true;
+        }
+
     }
 
     //public variable access
 
+
+    public void GetPickedUp()
+    {
+        //setting playerhand as the parent of this object
+        gameObject.transform.SetParent(playerHand);
+        //unequip all weapons
+        Component[] weapons;
+        weapons = transform.parent.GetComponentsInChildren<Weapon>();
+        foreach (Weapon weaponTemp in weapons)
+        {
+            weaponTemp.GetUnequiped();
+        }
+        //equip this weapon
+        equiped = true;
+
+        //resset pos and rotation
+        gameObject.transform.localPosition = new Vector3(0f,0f,0f);
+        // gameObject.transform.localRotation = Quaternion.identity;
+        Destroy(gameObject.GetComponent<Rigidbody2D>());
+        Destroy(gameObject.GetComponent<Collider2D>());
+
+        //Link newWeaponStats to player
+        // FindObjectOfType<PlayerCombat>().GetStats();
+        sendWeaponStats();
+    }
+
+    void sendWeaponStats()
+    {
+        playerStats.SetBaseDamage(baseDmg); 
+        playerStats.SetRange(baseRng); 
+        playerStats.SetatkSpeed(baseSpeed); 
+    }
     public bool IsEquiped()
     {
         return equiped;
     }
 
-    public void GetEquiped()
-    {
-        equiped = true;
-    }
+    // public void GetEquiped()
+    // {
+    //     equiped = true;
+    // }
 
     public void GetUnequiped()
     {
         equiped = false;
     }
 
-    public float GetSpeed()
-    {
-        return baseSpeed;
-    }
+    // public float GetSpeed()
+    // {
+    //     return baseSpeed;
+    // }
 
-    public float GetRng()
-    {
-        return baseRng;
-    }
+    // public float GetRng()
+    // {
+    //     return baseRng;
+    // }
 
-    public float GetDamage()
-    {
-        //return calculated damge, its just the baseDmg for now
-        return baseDmg;
-    }
+    // public float GetDamage()
+    // {
+    //     //return calculated damge, its just the baseDmg for now
+    //     return baseDmg;
+    // }
 
     public bool IsMelee()
     {
