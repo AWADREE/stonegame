@@ -24,18 +24,29 @@ public class Weapon : MonoBehaviour
     [SerializeField] float level =1f;
 
     //other
-    [SerializeField] bool equiped;
+    [SerializeField] bool equiped; //serialized for debugging
     bool uIConnected = false;
-    [SerializeField] float exp =0f;
+    [SerializeField] float exp =0f;         //current exp in this lvl
     [SerializeField] float expNeeded =1000f; //exp needed to level up to next level
     [SerializeField] float expNeededIncreasePerLevel = 1.25f;
-    [SerializeField] float remaingExp;      //for debuging
+    [SerializeField] float remaingExp;      //for debuging exp waitinf to be used
     [SerializeField] float nextLevelExp;    //for debuging
+    Transform playerHand;
+    SpriteRenderer[] renderers;
 
+    PlayerStats playerStats;
 
     private void Awake() 
     {
-        if(GetComponentInParent<PlayerStats>() != null)
+        renderers = GetComponentInChildren<SpriteRenderer>().GetComponentsInChildren<SpriteRenderer>();
+        playerStats = FindObjectOfType<PlayerStats>();
+        playerHand = FindObjectOfType<PlayerHand>().transform;
+        // if(GetComponentInParent<PlayerHand>() != null)
+        // {
+        //     equiped = true;
+        // }
+        //if the index of this object is the same as the index of the selected weapon then this weapon is equiped
+        if( transform.GetSiblingIndex() != playerHand.GetComponent<PlayerHand>().GetSelectedWeapon())
         {
             equiped = true;
         }
@@ -47,29 +58,13 @@ public class Weapon : MonoBehaviour
         if(equiped)
         {
             ConnectUI();
-
-            remaingExp = expNeeded-exp;
-            //updating hp bar and mp bar and exp bar
+            //updating UI
             expSlider.value = calculateExp();
             UpdateProfileText();
 
             if(exp < 0)
             {
                 exp =0;
-            }
-
-            //if stats exceeds max
-            if(exp >= expNeeded)
-            {
-                levelup();
-            }
-
-        }
-        else
-        {
-            if(GetComponentInParent<PlayerStats>())
-            {
-                GetComponent<SpriteRenderer>().enabled = false;
             }
         }
     }
@@ -88,59 +83,96 @@ public class Weapon : MonoBehaviour
     void levelup ()
     {
         level++;
-        exp = 0;
+        baseDmg +=20f;
+        exp = 0f;
         expNeeded *= expNeededIncreasePerLevel;
+        sendWeaponStats();
     }
 
     public void GetExp(float expReward)
     {
-        if(remaingExp > expReward)
+        if(expNeeded - exp > expReward)
         {
             exp +=expReward;
+            nextLevelExp =0f;
         }
-        else
+        else if(expNeeded - exp <= expReward)
         {
-           nextLevelExp = expReward - remaingExp;
-           levelup();
-           
-            GetRestOfExp();
+
+            nextLevelExp = expReward - (expNeeded- exp);
+            levelup();
+            GetRestOfExp(nextLevelExp);
             //get exp
         }
     }
 
-    void GetRestOfExp()
+
+    void GetRestOfExp(float expReward)
     {
-        if(nextLevelExp > expNeeded*2f)
+        if(expReward < expNeeded)
         {
-            nextLevelExp = expNeeded*2f;
+            exp+=expReward;
+            nextLevelExp =0f;
         }
-        else
+        else if(expReward >= expNeeded)
         {
-            exp+=nextLevelExp;
+            nextLevelExp = expReward - (expNeeded-exp);
+            levelup();
+            GetRestOfExp(nextLevelExp);
+            // nextLevelExp = expNeeded*2f;
         }
     }
 
     void ConnectUI()
     {
-        if(equiped)
-        {
 
-            if (uIConnected)
-            {
-                return;
-            }
-            else
-            { 
-                expSlider = GameObject.Find("EXP Slider").GetComponent<Slider>();
-                expText = GameObject.Find("EXPText").GetComponent<Text>();
-                levelText = GameObject.Find("LevelText").GetComponent<Text>();
-                uIConnected = true;
-            }
+        if (uIConnected)
+        {
+            return;
         }
+        else
+        { 
+            expSlider = GameObject.Find("EXP Slider").GetComponent<Slider>();
+            expText = GameObject.Find("EXPText").GetComponent<Text>();
+            levelText = GameObject.Find("LevelText").GetComponent<Text>();
+            uIConnected = true;
+        }
+
     }
 
-    //public variable access
+    public void GetPickedUp()
+    {
+        //setting playerhand as the parent of this object
+        gameObject.transform.SetParent(playerHand);
+        //unequip all weapons
+        Component[] weapons;
+        weapons = transform.parent.GetComponentsInChildren<Weapon>();
+        foreach (Weapon weaponTemp in weapons)
+        {
+            if(weaponTemp.IsEquiped())
+            {
+                weaponTemp.GetUnequiped();
+            }
+        }
+        //equip this weapon
+        GetEquiped();
 
+        //resset pos and rotation
+        gameObject.transform.localPosition = new Vector3(0f,0f,0f);
+        // gameObject.transform.localRotation = Quaternion.identity;
+        Destroy(gameObject.GetComponent<Rigidbody2D>());
+        Destroy(gameObject.GetComponent<Collider2D>());
+
+        //Link newWeaponStats to player
+        sendWeaponStats();
+    }
+
+    void sendWeaponStats()
+    {
+        playerStats.SetBaseDamage(baseDmg); 
+        playerStats.SetRange(baseRng); 
+        playerStats.SetatkSpeed(baseSpeed); 
+    }
     public bool IsEquiped()
     {
         return equiped;
@@ -149,28 +181,37 @@ public class Weapon : MonoBehaviour
     public void GetEquiped()
     {
         equiped = true;
+        foreach (SpriteRenderer renderer in renderers)
+        {
+            renderer.enabled = true;
+        }
+        sendWeaponStats();
     }
 
     public void GetUnequiped()
     {
         equiped = false;
+        foreach (SpriteRenderer renderer in renderers)
+        {
+            renderer.enabled = false;
+        }
     }
 
-    public float GetSpeed()
-    {
-        return baseSpeed;
-    }
+    // public float GetSpeed()
+    // {
+    //     return baseSpeed;
+    // }
 
-    public float GetRng()
-    {
-        return baseRng;
-    }
+    // public float GetRng()
+    // {
+    //     return baseRng;
+    // }
 
-    public float GetDamage()
-    {
-        //return calculated damge, its just the baseDmg for now
-        return baseDmg;
-    }
+    // public float GetDamage()
+    // {
+    //     //return calculated damge, its just the baseDmg for now
+    //     return baseDmg;
+    // }
 
     public bool IsMelee()
     {

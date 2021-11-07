@@ -9,9 +9,11 @@ public class PlayerCombat : MonoBehaviour
     SpriteRenderer spriteRenderer;
     [SerializeField] Color normalColor;
     [SerializeField] float pushBackForce;
-    [SerializeField] float pushUpForce;
+    [SerializeField] float angleOfPush;
+    // [SerializeField] float pushUpForce;
     [SerializeField] float recoilForce;
-    
+    [SerializeField] float atkRadius =1f;
+
     float damage;
     float range;
     float atkSpeed;
@@ -19,7 +21,7 @@ public class PlayerCombat : MonoBehaviour
     private void Awake() 
     {
         playerStats = GetComponent<PlayerStats>();
-        GetStats();
+        // GetStats();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
     }
@@ -31,15 +33,15 @@ public class PlayerCombat : MonoBehaviour
     void Update()
     {   
 
-        if(Input.GetKey(KeyCode.W)&& Input.GetKeyDown(KeyCode.Alpha1))
+        if((Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow))&& Input.GetKeyDown(KeyCode.X))
         {
             DamageAllInDirection(Vector2.up );
         }
-        else if(Input.GetKey(KeyCode.S) && Input.GetKeyDown(KeyCode.Alpha1))
+        else if((Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.X))
         {
             DamageAllInDirection(Vector2.down);
         }
-        else if(Input.GetKey(KeyCode.Alpha1) && Input.GetKeyDown(KeyCode.Alpha1))
+        else if(Input.GetKeyDown(KeyCode.X))
         {
             DamageAllInDirection(Vector2.right);
         }
@@ -69,34 +71,81 @@ public class PlayerCombat : MonoBehaviour
     {
         Debug.DrawRay(transform.position,transform.TransformDirection(direction)*range,Color.red);
         //use skill range
-        RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(direction), range, 1 << LayerMask.NameToLayer("Enemy"));
+        // RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(direction), range, 1 << LayerMask.NameToLayer("Enemy"));
 
+        RaycastHit2D[] hit = Physics2D.CircleCastAll(transform.position, atkRadius, transform.TransformDirection(direction),range,1 << LayerMask.NameToLayer("Enemy"));
+            
         for (int i = 0; i < hit.Length; i++)
         {
             //cast skill
-            hit[i].transform.GetComponent<Enemy>().TakeDamage(damage);
+            // Debug.Log("Hit"+i+"recorded");
+            Enemy currentEnemy =  hit[i].transform.GetComponent<Enemy>();
 
-            //apply force in the oposite direction the cated ray hit
-            Vector2 hitPointv= new Vector2();
-            hitPointv = transform.position;
-            Vector2 dir = hit[i].point - hitPointv;
+            currentEnemy.TakeDamage(damage);
+
+            if(!currentEnemy.GetIsAlive())
+            {
+                // Debug.Log("dead enemy "+i+" Detected");
+                Component[] weapons;
+                weapons = GetComponentsInChildren<Weapon>();
+                foreach (Weapon weaponTemp in weapons)
+                {
+                    if(weaponTemp.IsEquiped())
+                    {
+                        // Debug.Log("exp sent from enemy " +i);
+                        weaponTemp.GetExp(currentEnemy.GetEnemyExp());
+                        currentEnemy.killObject();
+                        // Debug.Log("Enemy " +i+" is ordered to die");
+                    }
+                }
+                //takeExp and destroy
+            }
+
+            //apply force in the oposite direction the of the point ray hit
+            //creating a vector containing the direction to push enemy in
+            Vector2 position2D= new Vector2();
+            position2D = transform.position;
+            Vector2 dir = hit[i].point - position2D;
             dir = dir.normalized;
+            //get recoiled
+            //applying the new velocity to recoil the player back
+            // GetComponent<Rigidbody2D>().AddForce(-dir.normalized*recoilForce);
+            GetComponent<Rigidbody2D>().velocity = recoilForce *(-dir.normalized);
 
+            
+            //creating a vector containing the direction to push enemy in
+            //changing the y point on a vector to change the angle of the push to a higher point
+            // Vector2 aboveHitPoint = new Vector2( hit[i].point.x , hit[i].point.y+angleOfPush);
+            // aboveHitPoint.y = hit[i].point.y+angleOfPush;
+            // Vector2 dirAngled = aboveHitPoint - position2D;
+            Vector2 angledDir = new Vector2 ( hit[i].point.x , hit[i].point.y + angleOfPush) - position2D;
+            angledDir = angledDir.normalized;
             Rigidbody2D rigid = hit[i].transform.GetComponent<Rigidbody2D>();//ref
-            rigid.AddForce(dir*pushBackForce);
-            rigid.AddForce(Vector2.up *pushUpForce);
-
-            GetComponent<Rigidbody2D>().AddForce(-dir.normalized*recoilForce);
+            // rigid.AddForce(dir*pushBackForce);
+            // rigid.AddForce(Vector2.up *pushUpForce);
+            //applying the new velocity to push enemy in an angle
+            rigid.velocity = pushBackForce *(angledDir);
 
         }
     }
 
-    //make public later to call whenever stats update is needed
-    public void GetStats()
+    public void SetTotalDamage(float totalDamage)
     {
-        //get stats
-        damage = playerStats.CalculatedCombatStats()[0];
-        range = playerStats.CalculatedCombatStats()[1];
-        atkSpeed = playerStats.CalculatedCombatStats()[2];
+        damage = totalDamage;
     }
+    public void SetRange(float totalRange)
+    {
+        range = totalRange;
+    }
+    public void SetAtkSpeed(float totalAtkSpeed)
+    {
+        atkSpeed = totalAtkSpeed;
+    }
+
+    private void OnDrawGizmos() {
+       Gizmos.color = Color.red;
+       Gizmos.DrawWireSphere(transform.position, atkRadius);
+
+    }
+
 }
