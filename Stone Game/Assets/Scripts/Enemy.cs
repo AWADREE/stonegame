@@ -203,6 +203,9 @@ public class Enemy : MonoBehaviour
         attacking = false;//for debugging
         finishedAttacking = true;
     }
-
+public bool GetIsAlive()
+{
+    return IsAlive;
+}
 
 }

@@ -74,7 +74,12 @@ public class PlayerCombat : MonoBehaviour
         for (int i = 0; i < hit.Length; i++)
         {
             //cast skill
-            hit[i].transform.GetComponent<Enemy>().TakeDamage(damage);
+            Enemy currentEnemy =  hit[i].transform.GetComponent<Enemy>();
+            currentEnemy.TakeDamage(damage);
+            if(!currentEnemy.GetIsAlive())
+            {
+                //takeExp and destroy
+            }
 
             //apply force in the oposite direction the cated ray hit
             Vector2 hitPointv= new Vector2();
