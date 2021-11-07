@@ -85,4 +85,9 @@ public class PlayerHand : MonoBehaviour
             i++;
         }
     }
+
+    public int GetSelectedWeapon()
+    {
+        return selectedWeapon;
+    }
 }

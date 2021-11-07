@@ -24,8 +24,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] float level =1f;
 
     //other
-    [SerializeField] bool equiped;
-    [SerializeField] bool collected;
+    [SerializeField] bool equiped; //serialized for debugging
     bool uIConnected = false;
     [SerializeField] float exp =0f;         //current exp in this lvl
     [SerializeField] float expNeeded =1000f; //exp needed to level up to next level
@@ -33,17 +32,22 @@ public class Weapon : MonoBehaviour
     [SerializeField] float remaingExp;      //for debuging exp waitinf to be used
     [SerializeField] float nextLevelExp;    //for debuging
     Transform playerHand;
+    SpriteRenderer[] renderers;
 
     PlayerStats playerStats;
 
     private void Awake() 
     {
-        // remaingExp = expNeeded;
+        renderers = GetComponentInChildren<SpriteRenderer>().GetComponentsInChildren<SpriteRenderer>();
         playerStats = FindObjectOfType<PlayerStats>();
         playerHand = FindObjectOfType<PlayerHand>().transform;
-        if(GetComponentInParent<PlayerHand>() != null)
+        // if(GetComponentInParent<PlayerHand>() != null)
+        // {
+        //     equiped = true;
+        // }
+        //if the index of this object is the same as the index of the selected weapon then this weapon is equiped
+        if( transform.GetSiblingIndex() != playerHand.GetComponent<PlayerHand>().GetSelectedWeapon())
         {
-            collected= true;
             equiped = true;
         }
 
@@ -54,8 +58,6 @@ public class Weapon : MonoBehaviour
         if(equiped)
         {
             ConnectUI();
-
-            // remaingExp = expNeeded-exp;
             //updating UI
             expSlider.value = calculateExp();
             UpdateProfileText();
@@ -64,21 +66,7 @@ public class Weapon : MonoBehaviour
             {
                 exp =0;
             }
-
-            //if stats exceeds max
-            // if(exp >= expNeeded)
-            // {
-            //     levelup();
-            // }
-
         }
-        // else
-        // {
-        //     if(GetComponentInParent<PlayerHand>())
-        //     {
-        //         GetComponent<SpriteRenderer>().enabled = false;
-        //     }
-        // }
     }
 
     void UpdateProfileText()
@@ -152,9 +140,6 @@ public class Weapon : MonoBehaviour
 
     }
 
-    //public variable access
-
-
     public void GetPickedUp()
     {
         //setting playerhand as the parent of this object
@@ -172,7 +157,6 @@ public class Weapon : MonoBehaviour
         //equip this weapon
         GetEquiped();
 
-
         //resset pos and rotation
         gameObject.transform.localPosition = new Vector3(0f,0f,0f);
         // gameObject.transform.localRotation = Quaternion.identity;
@@ -180,7 +164,6 @@ public class Weapon : MonoBehaviour
         Destroy(gameObject.GetComponent<Collider2D>());
 
         //Link newWeaponStats to player
-        // FindObjectOfType<PlayerCombat>().GetStats();
         sendWeaponStats();
     }
 
@@ -198,31 +181,20 @@ public class Weapon : MonoBehaviour
     public void GetEquiped()
     {
         equiped = true;
-
-        GetComponentInChildren<SpriteRenderer>().gameObject.SetActive(true);
-        SpriteRenderer[] renderers = GetComponentInChildren<SpriteRenderer>().GetComponentsInChildren<SpriteRenderer>();
-
         foreach (SpriteRenderer renderer in renderers)
         {
             renderer.enabled = true;
         }
         sendWeaponStats();
-        // GetComponent<SpriteRenderer>().enabled = true;
-        // GetComponentInChildren<SpriteRenderer>().enabled = true;
     }
 
     public void GetUnequiped()
     {
         equiped = false;
-        SpriteRenderer[] renderers = GetComponentInChildren<SpriteRenderer>().GetComponentsInChildren<SpriteRenderer>();
-
         foreach (SpriteRenderer renderer in renderers)
         {
             renderer.enabled = false;
         }
-
-        // GetComponent<SpriteRenderer>().enabled = false;
-        // GetComponentInChildren<SpriteRenderer>().enabled = false;
     }
 
     // public float GetSpeed()
