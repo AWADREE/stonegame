@@ -18,10 +18,14 @@ public class Enemy : MonoBehaviour
     [SerializeField] bool isAlive =true;
     [SerializeField] float moveSpeed= 10f;
     [SerializeField] float pushBackForce;
-    [SerializeField] float pushUpForce;
+    [SerializeField] float angleOfPush;
+
+    // [SerializeField] float pushUpForce;
     [SerializeField] Weapon weapon; //serizlised for debugging
     [SerializeField] bool chassing = false;       //serilized for debuging
+    [SerializeField] float TimeBeforeDeath =1.1f;
     [SerializeField] Color normalColor;
+    bool givenExp =false;
     Transform target;
     SpriteRenderer spriteRenderer;
     bool facingRight =true;
@@ -124,22 +128,22 @@ public class Enemy : MonoBehaviour
     void Die()
     {
         // weapon = FindObjectOfType<PlayerStats>().GetComponentInChildren<Weapon>();
-        Component[] weapons;
-        weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
-        foreach (Weapon weaponTemp in weapons)
-        {
-            if(weaponTemp.IsEquiped())
-            {
-                weapon = weaponTemp;
-            }
-        }
+        // Component[] weapons;
+        // weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
+        // foreach (Weapon weaponTemp in weapons)
+        // {
+        //     if(weaponTemp.IsEquiped())
+        //     {
+        //         weapon = weaponTemp;
+        //     }
+        // }
 
         isAlive= false;
-        Invoke("GiveWeaponExp",Random.Range(0.0f, 1f));
+        // Invoke("GiveWeaponExp",Random.Range(0.0f, 1f));
         // player.GetExp(expReward);
         //do vfx and sfx
         Invoke("DeathColor",0.3f);
-        Invoke("killObject",1.1f );
+        // Invoke("killObject",1.1f );
 
     }
 
@@ -167,17 +171,31 @@ public class Enemy : MonoBehaviour
         transform.Rotate(0f, 180f, 0f);
     }
 
-    public bool IsEnemyAlive()
+    public void killObject()
     {
-        return isAlive;
+        Invoke("DestroyThisObject",TimeBeforeDeath );
     }
-    void killObject()
+    public void DestroyThisObject()
     {
         Destroy(gameObject);
     }
-    void GiveWeaponExp()
+    // void GiveWeaponExp()
+    // {
+    //     weapon.GetExp(expReward);
+    // }
+
+    public float GetEnemyExp()
     {
-        weapon.GetExp(expReward);
+        // Debug.Log("enemy exp got");
+        if(!givenExp)
+        {
+            givenExp = true;
+            return expReward;
+        }
+        else
+        {
+            return 0f;
+        }
     }
 
 
@@ -191,21 +209,22 @@ public class Enemy : MonoBehaviour
         {            
             attackHit.transform.GetComponent<PlayerStats>().TakeDamage(damage);
             //apply force in the oposite direction the cated ray hit
-            Vector2 hitPointv= new Vector2();
-            hitPointv = transform.position;
-            Vector2 dir = attackHit.point - hitPointv;
+            Vector2 position2D= new Vector2();
+            position2D = transform.position;
+            Vector2 dir = new Vector2 ( attackHit.point.x , attackHit.point.y + angleOfPush) - position2D;
             dir = dir.normalized;
                 
             Rigidbody2D rigid = attackHit.transform.GetComponent<Rigidbody2D>();//ref
-            rigid.AddForce(dir*pushBackForce);
-            rigid.AddForce(Vector2.up *pushUpForce);
+            rigid.velocity= pushBackForce*(dir.normalized);
+
         }
         attacking = false;//for debugging
         finishedAttacking = true;
     }
-public bool GetIsAlive()
-{
-    return IsAlive;
-}
+
+    public bool GetIsAlive()
+    {
+        return isAlive;
+    }
 
 }

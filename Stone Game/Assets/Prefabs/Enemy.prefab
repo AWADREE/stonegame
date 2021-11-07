@@ -474,18 +474,19 @@ MonoBehaviour:
   currentHealthPoints: 0
   healthSlider: {fileID: 7885365846335670193}
   healthBarUI: {fileID: 7885365846348015539}
-  expReward: 472
+  expReward: 100
   damage: 25
   enemyRange: 2
   initiateAtkRange: 14.5
   detectionRange: 15
-  atkWindUpTime: 2
+  atkWindUpTime: 1.5
   isAlive: 1
   moveSpeed: 7
-  pushBackForce: 2000
-  pushUpForce: 600
+  pushBackForce: 20
+  angleOfPush: 1
   weapon: {fileID: 0}
   chassing: 0
+  TimeBeforeDeath: 1.1
   normalColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &7885365846335670199
 GameObject:

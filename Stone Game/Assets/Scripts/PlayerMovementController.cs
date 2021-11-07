@@ -70,58 +70,58 @@ public class PlayerMovementController : MonoBehaviour
         if(canMove)
         {
 
-        //------------------------flip player
-       // moveSpeed = playerStats.GetMoveSpeed();
+            //------------------------flip player
+            // moveSpeed = playerStats.GetMoveSpeed();
 
-        GetInput();
-        CheckIfFlipIsNeeded();
+            GetInput();
+            CheckIfFlipIsNeeded();
         
-        //-----------------------------------------
+            //-----------------------------------------
     
 
-        Vector2 v2GroundedBoxCheckPosition = (Vector2)transform.position + new Vector2(0, groundBoxYPos);
-        Vector2 v2GroundedBoxCheckScale = (Vector2)transform.localScale + new Vector2(groundBoxXScal, 0);
+            Vector2 v2GroundedBoxCheckPosition = (Vector2)transform.position + new Vector2(0, groundBoxYPos);
+            Vector2 v2GroundedBoxCheckScale = (Vector2)transform.localScale + new Vector2(groundBoxXScal, 0);
 
-        bool bGrounded = Physics2D.OverlapBox(v2GroundedBoxCheckPosition, v2GroundedBoxCheckScale, 0, lmWalls);
+            bool bGrounded = Physics2D.OverlapBox(v2GroundedBoxCheckPosition, v2GroundedBoxCheckScale, 0, lmWalls);
 
-        fGroundedRemember -= Time.deltaTime;
-        if (bGrounded)
-        {
-            fGroundedRemember = fGroundedRememberTime;
-        }
-
-        fJumpPressedRemember -= Time.deltaTime;
-        if (Input.GetButtonDown("Jump"))
-        {
-            fJumpPressedRemember = fJumpPressedRememberTime;
-        }
-
-        if (Input.GetButtonUp("Jump"))
-        {
-            if (rigid.velocity.y > 0)
+            fGroundedRemember -= Time.deltaTime;
+            if (bGrounded)
             {
-                rigid.velocity = new Vector2(rigid.velocity.x, rigid.velocity.y * fCutJumpHeight);
+                fGroundedRemember = fGroundedRememberTime;
             }
-        }
 
-        if ((fJumpPressedRemember > 0) && (fGroundedRemember > 0))
-        {
-            fJumpPressedRemember = 0;
-            fGroundedRemember = 0;
-            rigid.velocity = new Vector2(rigid.velocity.x, fJumpVelocity);
-        }
+            fJumpPressedRemember -= Time.deltaTime;
+            if (Input.GetButtonDown("Jump"))
+            {
+                fJumpPressedRemember = fJumpPressedRememberTime;
+            }
 
-        float fHorizontalVelocity = rigid.velocity.x;
-        fHorizontalVelocity += Input.GetAxisRaw("Horizontal");
+            if (Input.GetButtonUp("Jump"))
+            {
+                if (rigid.velocity.y > 0)
+                {
+                    rigid.velocity = new Vector2(rigid.velocity.x, rigid.velocity.y * fCutJumpHeight);
+                }
+            }
 
-        if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.01f)
-            fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenStopping, Time.deltaTime * 10f);
-        else if (Mathf.Sign(Input.GetAxisRaw("Horizontal")) != Mathf.Sign(fHorizontalVelocity))
-            fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenTurning, Time.deltaTime * 10f);
-        else
-            fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingBasic, Time.deltaTime * 10f);
+            if ((fJumpPressedRemember > 0) && (fGroundedRemember > 0))
+            {
+                fJumpPressedRemember = 0;
+                fGroundedRemember = 0;
+                rigid.velocity = new Vector2(rigid.velocity.x, fJumpVelocity);
+            }
 
-        rigid.velocity = new Vector2(fHorizontalVelocity, rigid.velocity.y);
+            float fHorizontalVelocity = rigid.velocity.x;
+            fHorizontalVelocity += Input.GetAxisRaw("Horizontal");
+
+            if (Mathf.Abs(Input.GetAxisRaw("Horizontal")) < 0.01f)
+                fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenStopping, Time.deltaTime * 10f);
+            else if (Mathf.Sign(Input.GetAxisRaw("Horizontal")) != Mathf.Sign(fHorizontalVelocity))
+                fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingWhenTurning, Time.deltaTime * 10f);
+            else
+                fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingBasic, Time.deltaTime * 10f);
+
+            rigid.velocity = new Vector2(fHorizontalVelocity, rigid.velocity.y);
         }
     }
 

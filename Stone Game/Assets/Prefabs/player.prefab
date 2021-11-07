@@ -210,9 +210,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   normalColor: {r: 0, g: 0, b: 0, a: 0}
-  pushBackForce: 300
-  pushUpForce: 500
-  recoilForce: 200
+  pushBackForce: 15
+  angleOfPush: 2
+  recoilForce: 15
+  atkRadius: 1
 --- !u!114 &1019314272
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -228,7 +229,7 @@ MonoBehaviour:
   lmWalls:
     serializedVersion: 2
     m_Bits: 1024
-  fJumpVelocity: 38
+  fJumpVelocity: 30
   fJumpPressedRememberTime: 0.2
   fGroundedRememberTime: 0.2
   fHorizontalAcceleration: 8

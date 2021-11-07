@@ -25,11 +25,12 @@ public class Weapon : MonoBehaviour
 
     //other
     [SerializeField] bool equiped;
+    [SerializeField] bool collected;
     bool uIConnected = false;
-    [SerializeField] float exp =0f;
+    [SerializeField] float exp =0f;         //current exp in this lvl
     [SerializeField] float expNeeded =1000f; //exp needed to level up to next level
     [SerializeField] float expNeededIncreasePerLevel = 1.25f;
-    [SerializeField] float remaingExp;      //for debuging
+    [SerializeField] float remaingExp;      //for debuging exp waitinf to be used
     [SerializeField] float nextLevelExp;    //for debuging
     Transform playerHand;
 
@@ -37,10 +38,12 @@ public class Weapon : MonoBehaviour
 
     private void Awake() 
     {
+        // remaingExp = expNeeded;
         playerStats = FindObjectOfType<PlayerStats>();
         playerHand = FindObjectOfType<PlayerHand>().transform;
-        if(GetComponentInParent<PlayerStats>() != null)
+        if(GetComponentInParent<PlayerHand>() != null)
         {
+            collected= true;
             equiped = true;
         }
 
@@ -52,7 +55,7 @@ public class Weapon : MonoBehaviour
         {
             ConnectUI();
 
-            remaingExp = expNeeded-exp;
+            // remaingExp = expNeeded-exp;
             //updating UI
             expSlider.value = calculateExp();
             UpdateProfileText();
@@ -63,19 +66,19 @@ public class Weapon : MonoBehaviour
             }
 
             //if stats exceeds max
-            if(exp >= expNeeded)
-            {
-                levelup();
-            }
+            // if(exp >= expNeeded)
+            // {
+            //     levelup();
+            // }
 
         }
-        else
-        {
-            if(GetComponentInParent<PlayerStats>())
-            {
-                GetComponent<SpriteRenderer>().enabled = false;
-            }
-        }
+        // else
+        // {
+        //     if(GetComponentInParent<PlayerHand>())
+        //     {
+        //         GetComponent<SpriteRenderer>().enabled = false;
+        //     }
+        // }
     }
 
     void UpdateProfileText()
@@ -93,36 +96,42 @@ public class Weapon : MonoBehaviour
     {
         level++;
         baseDmg +=20f;
-        exp = 0;
+        exp = 0f;
         expNeeded *= expNeededIncreasePerLevel;
         sendWeaponStats();
     }
 
     public void GetExp(float expReward)
     {
-        if(remaingExp > expReward)
+        if(expNeeded - exp > expReward)
         {
             exp +=expReward;
+            nextLevelExp =0f;
         }
-        else
+        else if(expNeeded - exp <= expReward)
         {
-           nextLevelExp = expReward - remaingExp;
-           levelup();
-           
-            GetRestOfExp();
+
+            nextLevelExp = expReward - (expNeeded- exp);
+            levelup();
+            GetRestOfExp(nextLevelExp);
             //get exp
         }
     }
 
-    void GetRestOfExp()
+
+    void GetRestOfExp(float expReward)
     {
-        if(nextLevelExp > expNeeded*2f)
+        if(expReward < expNeeded)
         {
-            nextLevelExp = expNeeded*2f;
+            exp+=expReward;
+            nextLevelExp =0f;
         }
-        else
+        else if(expReward >= expNeeded)
         {
-            exp+=nextLevelExp;
+            nextLevelExp = expReward - (expNeeded-exp);
+            levelup();
+            GetRestOfExp(nextLevelExp);
+            // nextLevelExp = expNeeded*2f;
         }
     }
 
@@ -155,10 +164,14 @@ public class Weapon : MonoBehaviour
         weapons = transform.parent.GetComponentsInChildren<Weapon>();
         foreach (Weapon weaponTemp in weapons)
         {
-            weaponTemp.GetUnequiped();
+            if(weaponTemp.IsEquiped())
+            {
+                weaponTemp.GetUnequiped();
+            }
         }
         //equip this weapon
-        equiped = true;
+        GetEquiped();
+
 
         //resset pos and rotation
         gameObject.transform.localPosition = new Vector3(0f,0f,0f);
@@ -182,14 +195,34 @@ public class Weapon : MonoBehaviour
         return equiped;
     }
 
-    // public void GetEquiped()
-    // {
-    //     equiped = true;
-    // }
+    public void GetEquiped()
+    {
+        equiped = true;
+
+        GetComponentInChildren<SpriteRenderer>().gameObject.SetActive(true);
+        SpriteRenderer[] renderers = GetComponentInChildren<SpriteRenderer>().GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (SpriteRenderer renderer in renderers)
+        {
+            renderer.enabled = true;
+        }
+        sendWeaponStats();
+        // GetComponent<SpriteRenderer>().enabled = true;
+        // GetComponentInChildren<SpriteRenderer>().enabled = true;
+    }
 
     public void GetUnequiped()
     {
         equiped = false;
+        SpriteRenderer[] renderers = GetComponentInChildren<SpriteRenderer>().GetComponentsInChildren<SpriteRenderer>();
+
+        foreach (SpriteRenderer renderer in renderers)
+        {
+            renderer.enabled = false;
+        }
+
+        // GetComponent<SpriteRenderer>().enabled = false;
+        // GetComponentInChildren<SpriteRenderer>().enabled = false;
     }
 
     // public float GetSpeed()
