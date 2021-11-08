@@ -2563,6 +2563,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8598557386089121151, guid: 188d7eb7426c77b4ebb125c53c694a43, type: 3}
+      propertyPath: baseSpeed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8598557386089121151, guid: 188d7eb7426c77b4ebb125c53c694a43, type: 3}
+      propertyPath: windUpTime
+      value: 0.6
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 188d7eb7426c77b4ebb125c53c694a43, type: 3}
 --- !u!1001 &3370647304432447362
@@ -3553,6 +3561,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7154076026154988733, guid: 4c0c1a215d9adbf40acfc239d1cfd374, type: 3}
+      propertyPath: baseSpeed
+      value: 0.3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7154076026154988733, guid: 4c0c1a215d9adbf40acfc239d1cfd374, type: 3}
+      propertyPath: windUpTime
+      value: 0.1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4c0c1a215d9adbf40acfc239d1cfd374, type: 3}
 --- !u!1001 &5677477881928617184
@@ -3682,6 +3698,14 @@ PrefabInstance:
     - target: {fileID: 891986691716079758, guid: 4fd1913d8341dd844ade86682d04314f, type: 3}
       propertyPath: m_Name
       value: Wooden Sword
+      objectReference: {fileID: 0}
+    - target: {fileID: 891986691716079760, guid: 4fd1913d8341dd844ade86682d04314f, type: 3}
+      propertyPath: baseSpeed
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 891986691716079760, guid: 4fd1913d8341dd844ade86682d04314f, type: 3}
+      propertyPath: windUpTime
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 891986691716079761, guid: 4fd1913d8341dd844ade86682d04314f, type: 3}
       propertyPath: m_LocalPosition.x

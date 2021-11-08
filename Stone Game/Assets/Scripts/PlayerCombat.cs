@@ -10,18 +10,19 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] Color normalColor;
     [SerializeField] float pushBackForce;
     [SerializeField] float angleOfPush;
-    // [SerializeField] float pushUpForce;
     [SerializeField] float recoilForce;
     [SerializeField] float atkRadius =1f;
-
+    bool canAtk = true;
+    float timeSinceLastAtk =0f;
     float damage;
     float range;
     float atkSpeed;
+    float windUpTime;
+    int currentWeaponId;
 
     private void Awake() 
     {
         playerStats = GetComponent<PlayerStats>();
-        // GetStats();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
     }
@@ -32,18 +33,40 @@ public class PlayerCombat : MonoBehaviour
 
     void Update()
     {   
+        timeSinceLastAtk +=Time.deltaTime;
 
-        if((Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow))&& Input.GetKeyDown(KeyCode.X))
+        if(timeSinceLastAtk>= atkSpeed)
         {
-            DamageAllInDirection(Vector2.up );
+            canAtk = true;
         }
-        else if((Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.X))
+
+
+        if(canAtk)
         {
-            DamageAllInDirection(Vector2.down);
-        }
-        else if(Input.GetKeyDown(KeyCode.X))
-        {
-            DamageAllInDirection(Vector2.right);
+            //attacking up and down
+            // if((Input.GetKey(KeyCode.W)||Input.GetKey(KeyCode.UpArrow))&& Input.GetKeyDown(KeyCode.X))
+            // {
+            //     DamageAllInDirection(Vector2.up );
+            // }
+            // else if((Input.GetKey(KeyCode.S)||Input.GetKey(KeyCode.DownArrow)) && Input.GetKeyDown(KeyCode.X))
+            // {
+            //     DamageAllInDirection(Vector2.down);
+            // }
+            // else
+             if(Input.GetKeyDown(KeyCode.X))
+            {
+                canAtk = false;
+                timeSinceLastAtk =0f;
+
+                //if wepon id is 0 
+                //play weapon 0 atk animation
+                //if wepon id is 1 
+                //play weapon 1 atk animation
+                //if wepon id is 2 
+                //play weapon 2 atk animation
+                Invoke("DamageAllInDirection", windUpTime );
+                // DamageAllInDirection(Vector2.right);
+            }
         }
 
     }
@@ -67,13 +90,14 @@ public class PlayerCombat : MonoBehaviour
 
     }
 
-    void DamageAllInDirection(Vector2 direction)
+//add a vector2 paramiter if u need to add other directions to atk in other than right and left , add Vector2 direction
+    void DamageAllInDirection()
     {
-        Debug.DrawRay(transform.position,transform.TransformDirection(direction)*range,Color.red);
+        Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*range,Color.red);
         //use skill range
         // RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(direction), range, 1 << LayerMask.NameToLayer("Enemy"));
 
-        RaycastHit2D[] hit = Physics2D.CircleCastAll(transform.position, atkRadius, transform.TransformDirection(direction),range,1 << LayerMask.NameToLayer("Enemy"));
+        RaycastHit2D[] hit = Physics2D.CircleCastAll(transform.position, atkRadius, transform.TransformDirection(Vector2.right),range,1 << LayerMask.NameToLayer("Enemy"));
             
         for (int i = 0; i < hit.Length; i++)
         {
@@ -115,18 +139,14 @@ public class PlayerCombat : MonoBehaviour
             
             //creating a vector containing the direction to push enemy in
             //changing the y point on a vector to change the angle of the push to a higher point
-            // Vector2 aboveHitPoint = new Vector2( hit[i].point.x , hit[i].point.y+angleOfPush);
-            // aboveHitPoint.y = hit[i].point.y+angleOfPush;
-            // Vector2 dirAngled = aboveHitPoint - position2D;
             Vector2 angledDir = new Vector2 ( hit[i].point.x , hit[i].point.y + angleOfPush) - position2D;
             angledDir = angledDir.normalized;
             Rigidbody2D rigid = hit[i].transform.GetComponent<Rigidbody2D>();//ref
-            // rigid.AddForce(dir*pushBackForce);
-            // rigid.AddForce(Vector2.up *pushUpForce);
             //applying the new velocity to push enemy in an angle
             rigid.velocity = pushBackForce *(angledDir);
 
         }
+
     }
 
     public void SetTotalDamage(float totalDamage)
@@ -140,6 +160,14 @@ public class PlayerCombat : MonoBehaviour
     public void SetAtkSpeed(float totalAtkSpeed)
     {
         atkSpeed = totalAtkSpeed;
+    }
+    public void SetWindUpTime(float totalWindUpTime)
+    {
+        windUpTime = totalWindUpTime;
+    }
+    public void SetWeaponId(int weaponId)
+    {
+        currentWeaponId = weaponId;
     }
 
     private void OnDrawGizmos() {

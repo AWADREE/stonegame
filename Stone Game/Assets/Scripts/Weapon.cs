@@ -18,6 +18,8 @@ public class Weapon : MonoBehaviour
     [SerializeField] float baseDmg =50f;
     [SerializeField] float baseRng = 50f;
     [SerializeField] float baseSpeed =5f;
+    [SerializeField] float windUpTime= 2f;
+    [SerializeField] int weaponId;
     [SerializeField] bool oneHanded =true;
     [SerializeField] bool twoHanded =true;
     [SerializeField] bool sheath =true;
@@ -172,6 +174,8 @@ public class Weapon : MonoBehaviour
         playerStats.SetBaseDamage(baseDmg); 
         playerStats.SetRange(baseRng); 
         playerStats.SetatkSpeed(baseSpeed); 
+        playerStats.SetWindUpTime(windUpTime); 
+        playerStats.SetWeaponId(weaponId); 
     }
     public bool IsEquiped()
     {

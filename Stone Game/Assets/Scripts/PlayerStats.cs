@@ -15,6 +15,8 @@ public class PlayerStats : MonoBehaviour
     float baseDamage;
     float damage;
     float atkSpeed;
+    float windUpTime;
+    int currentWeaponId;
     float range;
     float critChance =0.1f;
     float critMulti =1.25f;
@@ -142,64 +144,11 @@ public class PlayerStats : MonoBehaviour
         spriteRenderer.color = Color.black;
     }
 
-    //function that calculates combat stats and return damage, range, and atkSpeed
-    // public float[] CalculatedCombatStats()
-    // {
-
-    //     Component[] weapons;
-    //     weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
-    //     foreach (Weapon weaponTemp in weapons)
-    //     {
-    //         if(weaponTemp.IsEquiped())
-    //         {
-    //             weapon = weaponTemp;
-    //         }
-    //     }
-
-    //     if(weapon != null)
-    //     {
-    //         float[] stats = new float[3];
-    //         float tempDamage;
-
-    //         tempDamage = weapon.GetDamage();
-    //         //get and calculate combat style damage and total dmg
-
-    //         range = weapon.GetRng();
-    //         atkSpeed = weapon.GetSpeed();
-
-    //         stats[0]= tempDamage;
-    //         stats[1]= range;
-    //         stats[2]= atkSpeed;
-    //         return stats;
-
-    //     }
-    //     else
-    //     {
-    //         float[] emptyFloatArray = new float[3];
-    //         return emptyFloatArray;
-    //     }
-    // }
-
     // increase moeny
     public void IncreaseCurrencyBy(int newCurrency)
     {
         currency += newCurrency;
     }
-
-
-    //update this script stats then calculate total and send it to playercombat ststs
-
-    // void CalculateAndUpdateCombatStats()
-    // {
-    //     //calculate total damage
-    //     // damage = baseDamage*(critChance*critMulti);
-    //     damage = baseDamage;
-    //     playerCombat.SetTotalDamage(damage);
-    //     //calculate range and set it
-    //     playerCombat.SetRange(range);
-    //     //calculate atkSpeed and set it
-    //     playerCombat.SetAtkSpeed(atkSpeed);
-    // }
 
     public void SetBaseDamage(float weaponDamage)
     {
@@ -220,6 +169,18 @@ public class PlayerStats : MonoBehaviour
     {
         atkSpeed = weaponatkSpeed;
         playerCombat.SetAtkSpeed(atkSpeed);
+        // CalculateAndUpdateCombatStats();
+    }
+    public void SetWindUpTime(float weaponWindUpTime)
+    {
+        windUpTime = weaponWindUpTime;
+        playerCombat.SetWindUpTime(windUpTime);
+        // CalculateAndUpdateCombatStats();
+    }
+    public void SetWeaponId(int weaponId)
+    {
+        currentWeaponId = weaponId;
+        playerCombat.SetWeaponId(currentWeaponId);
         // CalculateAndUpdateCombatStats();
     }
 }
