@@ -115,36 +115,22 @@ public class Enemy : MonoBehaviour
         return currentHealthPoints/ maxHealthPoints;
     }
 
-    public void TakeDamage (float damage)
+    public bool TakeDamageAndCheckIfAlive (float damage)
     {
-        if(isAlive)
+        currentHealthPoints -= damage;
+        GetComponentInChildren<SpriteRenderer>().color = Color.red;
+        Invoke("RestoreColor",0.1f);
+        if(currentHealthPoints <= 0)
         {
-            currentHealthPoints -= damage;
-            GetComponentInChildren<SpriteRenderer>().color = Color.red;
-            Invoke("RestoreColor",0.1f);
+            Die();
         }
+        return isAlive;
     }
 
     void Die()
     {
-        // weapon = FindObjectOfType<PlayerStats>().GetComponentInChildren<Weapon>();
-        // Component[] weapons;
-        // weapons = FindObjectOfType<PlayerStats>().GetComponentsInChildren<Weapon>();
-        // foreach (Weapon weaponTemp in weapons)
-        // {
-        //     if(weaponTemp.IsEquiped())
-        //     {
-        //         weapon = weaponTemp;
-        //     }
-        // }
-
         isAlive= false;
-        // Invoke("GiveWeaponExp",Random.Range(0.0f, 1f));
-        // player.GetExp(expReward);
-        //do vfx and sfx
         Invoke("DeathColor",0.3f);
-        // Invoke("killObject",1.1f );
-
     }
 
     void RestoreColor()
@@ -213,9 +199,13 @@ public class Enemy : MonoBehaviour
             position2D = transform.position;
             Vector2 dir = new Vector2 ( attackHit.point.x , attackHit.point.y + angleOfPush) - position2D;
             dir = dir.normalized;
-                
-            Rigidbody2D rigid = attackHit.transform.GetComponent<Rigidbody2D>();//ref
-            rigid.velocity= pushBackForce*(dir.normalized);
+            
+            //apply forces on player
+            if(attackHit.transform.GetComponent<PlayerCombat>().IsrecoveryTimeDone())
+            {
+                Rigidbody2D rigid = attackHit.transform.GetComponent<Rigidbody2D>();//ref
+                rigid.velocity= pushBackForce*(dir.normalized);
+            }
 
         }
         attacking = false;//for debugging

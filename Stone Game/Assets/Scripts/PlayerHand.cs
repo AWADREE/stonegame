@@ -18,18 +18,18 @@ public class PlayerHand : MonoBehaviour
     {
         int previousSelectedWeapon = selectedWeapon;
 
-        if(Input.GetAxis("Mouse ScrollWheel")>0f)
-        {
-            if(selectedWeapon >= transform.childCount-1)
-            {
-                selectedWeapon=0;
-            }
-            else
-            {
-                selectedWeapon++;
-            }
-        }
         //scroll wheel weapon selection
+        // if(Input.GetAxis("Mouse ScrollWheel")>0f)
+        // {
+        //     if(selectedWeapon >= transform.childCount-1)
+        //     {
+        //         selectedWeapon=0;
+        //     }
+        //     else
+        //     {
+        //         selectedWeapon++;
+        //     }
+        // }
         // if(Input.GetAxis("Mouse ScrollWheel")<0f)
         // {
         //     if(selectedWeapon <= 0)

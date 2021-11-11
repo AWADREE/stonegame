@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerCombat : MonoBehaviour
 {
     PlayerStats playerStats;
+    PlayerMovementController playerMovement;
     LayerMask EnemyLayer;
     SpriteRenderer spriteRenderer;
     [SerializeField] Color normalColor;
@@ -12,16 +13,25 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] float angleOfPush;
     [SerializeField] float recoilForce;
     [SerializeField] float atkRadius =1f;
+    [SerializeField] int manaRecoveryOnHit;
     bool canAtk = true;
     float timeSinceLastAtk =0f;
-    float damage;
+    float damage;//total damge acctually applied
     float range;
     float atkSpeed;
     float windUpTime;
     int currentWeaponId;
+    bool recoveryTimeDone = true;
+    int currentWeaponAbillityCost;
+    float currentWeaponAbillityWindUpTime;
+    int currentWeaponAbillityDamage;
+    float currentWeaponAbillityRange;
+    [SerializeField] float timeSinceLastAbillityCast =0f; //for debugging
+    float abillityRecoveryTime;
 
     private void Awake() 
     {
+        playerMovement = GetComponent<PlayerMovementController>();
         playerStats = GetComponent<PlayerStats>();
         spriteRenderer = GetComponentInChildren<SpriteRenderer>();
         normalColor= spriteRenderer.color;
@@ -38,6 +48,54 @@ public class PlayerCombat : MonoBehaviour
         if(timeSinceLastAtk>= atkSpeed)
         {
             canAtk = true;
+        }
+
+        timeSinceLastAbillityCast +=Time.deltaTime;
+
+        if(timeSinceLastAbillityCast>= abillityRecoveryTime)
+        {
+            recoveryTimeDone = true;
+            playerMovement.StartMoving();
+        }
+
+        if(recoveryTimeDone)
+        {
+
+            if(currentWeaponId == 0 && Input.GetKeyDown(KeyCode.C))//waepon id 0 is for the Wooden sword
+            {
+                if(playerStats.HasEnoughMana(currentWeaponAbillityCost))
+                {
+                    //play abillity animation
+                    playerMovement.StopMoving();
+                    recoveryTimeDone = false;
+                    timeSinceLastAbillityCast =0f;
+                    Invoke("WoodenSwordAbillity", currentWeaponAbillityWindUpTime);
+                }
+            }
+
+            if(currentWeaponId == 1 && Input.GetKeyDown(KeyCode.C))//waepon id 1 is for the katana
+            {
+                if(playerStats.HasEnoughMana(currentWeaponAbillityCost))
+                {
+                    //play abillity animation
+                    playerMovement.StopMoving();
+                    recoveryTimeDone = false;
+                    timeSinceLastAbillityCast =0f;
+                    Invoke("KatanaAbillity", currentWeaponAbillityWindUpTime);
+                }
+            }
+
+            if(currentWeaponId == 2 && Input.GetKeyDown(KeyCode.C))//waepon id 2 is for the long katana
+            {
+                if(playerStats.HasEnoughMana(currentWeaponAbillityCost))
+                {
+                    //play abillity animation
+                    playerMovement.StopMoving();
+                    recoveryTimeDone = false;
+                    timeSinceLastAbillityCast =0f;
+                    Invoke("LongKatanaAbillity", currentWeaponAbillityWindUpTime);
+                }
+            }
         }
 
 
@@ -64,11 +122,40 @@ public class PlayerCombat : MonoBehaviour
                 //play weapon 1 atk animation
                 //if wepon id is 2 
                 //play weapon 2 atk animation
-                Invoke("DamageAllInDirection", windUpTime );
+                Invoke("SingleTargetAttack", windUpTime ); //change this to AoeAttack or to SingleTargetAttack
                 // DamageAllInDirection(Vector2.right);
             }
         }
 
+    }
+
+    //abillities
+    void WoodenSwordAbillity()
+    {
+        Vector2 lastPos = new Vector2(transform.position.x, transform.position.y);
+        //instantiate lazer
+        //destroy lazr object
+        //teleport
+        AttackWithoutForce();
+        transform.position+= transform.right * currentWeaponAbillityRange;
+    }
+    void KatanaAbillity()
+    {
+        Vector2 lastPos = new Vector2(transform.position.x, transform.position.y);
+        //instantiate lazer
+        //destroy lazr object
+        //teleport
+        AttackWithoutForce();
+        transform.position+= transform.right * currentWeaponAbillityRange;
+    }
+    void LongKatanaAbillity()
+    {
+        Vector2 lastPos = new Vector2(transform.position.x, transform.position.y);
+        //instantiate lazer
+        //destroy lazr object
+        //teleport
+        AttackWithoutForce();
+        transform.position+= transform.right * currentWeaponAbillityRange;
     }
 
     public float TakeDamage(float damage)
@@ -79,75 +166,149 @@ public class PlayerCombat : MonoBehaviour
         return damage;
     }
 
-       void RestoreColor()
+    void RestoreColor()
     {
         spriteRenderer.color = normalColor;
     }
 
-    void DealPysicalDamage(Enemy enemy)
+    //Area of Effect Attack
+    //add a vector2 paramiter if u need to add other directions to atk in other than right and left , add Vector2 direction
+    void AoeAttack()
     {
-        enemy.TakeDamage(damage);
-
-    }
-
-//add a vector2 paramiter if u need to add other directions to atk in other than right and left , add Vector2 direction
-    void DamageAllInDirection()
-    {
-        Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*range,Color.red);
-        //use skill range
         // RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(direction), range, 1 << LayerMask.NameToLayer("Enemy"));
-
+        Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*range,Color.red);
         RaycastHit2D[] hit = Physics2D.CircleCastAll(transform.position, atkRadius, transform.TransformDirection(Vector2.right),range,1 << LayerMask.NameToLayer("Enemy"));
             
         for (int i = 0; i < hit.Length; i++)
         {
-            //cast skill
-            // Debug.Log("Hit"+i+"recorded");
-            Enemy currentEnemy =  hit[i].transform.GetComponent<Enemy>();
-
-            currentEnemy.TakeDamage(damage);
-
-            if(!currentEnemy.GetIsAlive())
+            //attack
+            if(hit.Length == 0)
             {
-                // Debug.Log("dead enemy "+i+" Detected");
+                //no enemies in range
+                return;
+            }
+            Enemy currentEnemy =  hit[i].transform.GetComponent<Enemy>();
+            if(currentEnemy.GetIsAlive())
+            {
+                if(!currentEnemy.TakeDamageAndCheckIfAlive(damage))
+                {
+                    Component[] weapons;
+                    weapons = GetComponentsInChildren<Weapon>();
+                    foreach (Weapon weaponTemp in weapons)
+                    {
+                        if(weaponTemp.IsEquiped())
+                        {
+                            weaponTemp.GetExp(currentEnemy.GetEnemyExp());
+                            currentEnemy.killObject();
+                        }
+                    }
+                    //takeExp and destroy
+                }
+                ApplyRecoil(hit[i]);
+                PushEnemyBack(hit[i]);
+                //add mana to player
+                playerStats.RecoverMana(manaRecoveryOnHit);
+            }   
+        }
+    }
+
+    //single target attack
+    void SingleTargetAttack()
+    {
+        
+        Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*range,Color.red);
+        RaycastHit2D hit = Physics2D.CircleCast(transform.position, atkRadius, transform.TransformDirection(Vector2.right),range,1 << LayerMask.NameToLayer("Enemy"));
+        //attack
+        if(!hit)
+        {
+            //no enemies in range
+            return;
+        }
+        Enemy currentEnemy =  hit.transform.GetComponent<Enemy>();
+        if(currentEnemy.GetIsAlive())
+        {
+            if(!currentEnemy.TakeDamageAndCheckIfAlive(damage))
+            {
                 Component[] weapons;
                 weapons = GetComponentsInChildren<Weapon>();
                 foreach (Weapon weaponTemp in weapons)
                 {
                     if(weaponTemp.IsEquiped())
                     {
-                        // Debug.Log("exp sent from enemy " +i);
                         weaponTemp.GetExp(currentEnemy.GetEnemyExp());
                         currentEnemy.killObject();
-                        // Debug.Log("Enemy " +i+" is ordered to die");
                     }
                 }
                 //takeExp and destroy
             }
-
-            //apply force in the oposite direction the of the point ray hit
-            //creating a vector containing the direction to push enemy in
-            Vector2 position2D= new Vector2();
-            position2D = transform.position;
-            Vector2 dir = hit[i].point - position2D;
-            dir = dir.normalized;
-            //get recoiled
-            //applying the new velocity to recoil the player back
-            // GetComponent<Rigidbody2D>().AddForce(-dir.normalized*recoilForce);
-            GetComponent<Rigidbody2D>().velocity = recoilForce *(-dir.normalized);
-
-            
-            //creating a vector containing the direction to push enemy in
-            //changing the y point on a vector to change the angle of the push to a higher point
-            Vector2 angledDir = new Vector2 ( hit[i].point.x , hit[i].point.y + angleOfPush) - position2D;
-            angledDir = angledDir.normalized;
-            Rigidbody2D rigid = hit[i].transform.GetComponent<Rigidbody2D>();//ref
-            //applying the new velocity to push enemy in an angle
-            rigid.velocity = pushBackForce *(angledDir);
-
-        }
-
+            ApplyRecoil(hit);
+            PushEnemyBack(hit);
+            //add mana to player
+            playerStats.RecoverMana(manaRecoveryOnHit);
+        }   
     }
+
+    //abillity atack
+    void AttackWithoutForce()
+    {
+        Debug.DrawRay(transform.position,transform.TransformDirection(Vector2.right)*currentWeaponAbillityRange,Color.red);
+        RaycastHit2D[] hit = Physics2D.CircleCastAll(transform.position, atkRadius, transform.TransformDirection(Vector2.right),currentWeaponAbillityRange,1 << LayerMask.NameToLayer("Enemy"));   
+        for (int i = 0; i < hit.Length; i++)
+        {
+            //attack
+            if(hit.Length == 0)
+            {
+                //no enemies in range
+                return;
+            }
+            Enemy currentEnemy =  hit[i].transform.GetComponent<Enemy>();
+            //if enemy alive apply damge to it
+            if(currentEnemy.GetIsAlive())
+            {
+                if(!currentEnemy.TakeDamageAndCheckIfAlive(currentWeaponAbillityDamage))
+                {
+                    //take exp if enemy is dead
+                    Component[] weapons;
+                    weapons = GetComponentsInChildren<Weapon>();
+                    foreach (Weapon weaponTemp in weapons)
+                    {
+                        if(weaponTemp.IsEquiped())
+                        {
+                            weaponTemp.GetExp(currentEnemy.GetEnemyExp());
+                            currentEnemy.killObject();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    void ApplyRecoil(RaycastHit2D hit)
+    {
+        //apply force in the oposite direction the of the point ray hit
+        //creating a vector containing the direction to push enemy in
+        Vector2 position2D= new Vector2();
+        position2D = transform.position;
+        Vector2 dir = hit.point - position2D;
+        dir = dir.normalized;
+        //get recoiled
+        //applying the new velocity to recoil the player back
+        GetComponent<Rigidbody2D>().velocity = recoilForce *(-dir.normalized);
+    }
+
+    void PushEnemyBack(RaycastHit2D hit)
+    {       
+        Vector2 position2D= new Vector2();
+        position2D = transform.position;
+        //creating a vector containing the direction to push enemy in
+        //changing the y point on a vector to change the angle of the push to a higher point
+        Vector2 angledDir = new Vector2 ( hit.point.x , hit.point.y + angleOfPush) - position2D;
+        Rigidbody2D enemyRigid = hit.transform.GetComponent<Rigidbody2D>();//ref
+        //applying the new velocity to push enemy in an angle
+        enemyRigid.velocity = pushBackForce *(angledDir.normalized);
+    }
+
+
 
     public void SetTotalDamage(float totalDamage)
     {
@@ -165,15 +326,38 @@ public class PlayerCombat : MonoBehaviour
     {
         windUpTime = totalWindUpTime;
     }
+    public void SetAbillityWindUpTime(float abillityWindupTime)
+    {
+        currentWeaponAbillityWindUpTime = abillityWindupTime;
+    }
     public void SetWeaponId(int weaponId)
     {
         currentWeaponId = weaponId;
+    }
+    public void SetAbillityCost(int AbillityCost)
+    {
+        currentWeaponAbillityCost = AbillityCost;
+    }
+    public void SetAbillityRecoveryTime(float recoveryTime)
+    {
+        abillityRecoveryTime = recoveryTime;
+    }
+    public void SetWeaponAbillityDamage(int abillityDamage)
+    {
+        currentWeaponAbillityDamage = abillityDamage;
+    }
+    public void SetWeaponAbillityRange(float abillityRange)
+    {
+        currentWeaponAbillityRange = abillityRange;
     }
 
     private void OnDrawGizmos() {
        Gizmos.color = Color.red;
        Gizmos.DrawWireSphere(transform.position, atkRadius);
-
+    }
+    public bool IsrecoveryTimeDone()
+    {
+        return recoveryTimeDone;
     }
 
 }

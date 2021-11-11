@@ -6,20 +6,23 @@ using UnityEngine.UI;
 public class Weapon : MonoBehaviour
 {
     //referances
-    [SerializeField] Text expText;
-    [SerializeField] Text levelText;
-
-    //current stats serilized for debugging
-    [SerializeField] Slider expSlider;
+    Text expText;
+    Text levelText;
+    Slider expSlider;
     
     //basic stats
+    [SerializeField] int weaponId;
     [SerializeField] string weaponName;
     [SerializeField] bool melee =true;
     [SerializeField] float baseDmg =50f;
     [SerializeField] float baseRng = 50f;
     [SerializeField] float baseSpeed =5f;
     [SerializeField] float windUpTime= 2f;
-    [SerializeField] int weaponId;
+    [SerializeField] float abillityWindUpTime= 2f;
+    [SerializeField] float abillityRecoveryTime= 2f;
+    [SerializeField] int abillityBaseDamage= 100;
+    [SerializeField] float abillityBaseRange;
+    [SerializeField] int abillityCost;
     [SerializeField] bool oneHanded =true;
     [SerializeField] bool twoHanded =true;
     [SerializeField] bool sheath =true;
@@ -48,11 +51,14 @@ public class Weapon : MonoBehaviour
         //     equiped = true;
         // }
         //if the index of this object is the same as the index of the selected weapon then this weapon is equiped
-        if( transform.GetSiblingIndex() != playerHand.GetComponent<PlayerHand>().GetSelectedWeapon())
+        if(playerStats.GetEquipedWeaponId() == weaponId)
         {
             equiped = true;
         }
-
+        else
+        {
+            equiped = false;
+        }
     }
 
     private void Update() 
@@ -137,6 +143,7 @@ public class Weapon : MonoBehaviour
             expSlider = GameObject.Find("EXP Slider").GetComponent<Slider>();
             expText = GameObject.Find("EXPText").GetComponent<Text>();
             levelText = GameObject.Find("LevelText").GetComponent<Text>();
+
             uIConnected = true;
         }
 
@@ -176,6 +183,11 @@ public class Weapon : MonoBehaviour
         playerStats.SetatkSpeed(baseSpeed); 
         playerStats.SetWindUpTime(windUpTime); 
         playerStats.SetWeaponId(weaponId); 
+        playerStats.SetAbillityCost(abillityCost); 
+        playerStats.SetAbillityWindUpTime(abillityWindUpTime); 
+        playerStats.SetAbillityRecoveryTime(abillityRecoveryTime); 
+        playerStats.SetAbillityBaseDamage(abillityBaseDamage); 
+        playerStats.SetAbillityBaseRange(abillityBaseRange); 
     }
     public bool IsEquiped()
     {
