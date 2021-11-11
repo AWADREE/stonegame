@@ -45,7 +45,7 @@ public class PlayerMovementController : MonoBehaviour
     [SerializeField] float groundBoxYPos;
     [SerializeField] float groundBoxXScal;
 
-    bool canMove = true;
+    [SerializeField] bool canMove = true; //for debugging
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
         if(m_Started)
@@ -121,7 +121,7 @@ public class PlayerMovementController : MonoBehaviour
             else
                 fHorizontalVelocity *= Mathf.Pow(1f - fHorizontalDampingBasic, Time.deltaTime * 10f);
 
-            rigid.velocity = new Vector2(fHorizontalVelocity, rigid.velocity.y);
+            rigid.velocity = new Vector2(fHorizontalVelocity, rigid.velocity.y);//added *fHorizontalAcceleration*time.delta time
         }
     }
 
@@ -153,5 +153,15 @@ public class PlayerMovementController : MonoBehaviour
     public void StopMoving()
     {
         canMove = false;
+        rigid.velocity = new Vector2( 0, rigid.velocity.y);
+    }
+    public void StartMoving()
+    {
+        canMove = true;
+    }
+
+    public bool CanPlayerMove()
+    {
+        return canMove;
     }
 }
