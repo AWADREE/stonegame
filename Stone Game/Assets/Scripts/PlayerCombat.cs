@@ -7,13 +7,17 @@ public class PlayerCombat : MonoBehaviour
     PlayerStats playerStats;
     PlayerMovementController playerMovement;
     LayerMask EnemyLayer;
-    SpriteRenderer spriteRenderer;
-    [SerializeField] Color normalColor;
+    // SpriteRenderer spriteRenderer;
+    // [SerializeField] Color normalColor;
     [SerializeField] float pushBackForce;
     [SerializeField] float angleOfPush;
     [SerializeField] float recoilForce;
     [SerializeField] float atkRadius =1f;
     [SerializeField] int manaRecoveryOnHit;
+    [SerializeField] GameObject firstDashEffect;
+    [SerializeField] GameObject secondDashEffect;
+    [SerializeField] float firstDashEffectTime= 0.01f;
+    [SerializeField] float secondDashEffectTime= 0.01f;
     bool canAtk = true;
     float timeSinceLastAtk =0f;
     float damage;//total damge acctually applied
@@ -33,8 +37,8 @@ public class PlayerCombat : MonoBehaviour
     {
         playerMovement = GetComponent<PlayerMovementController>();
         playerStats = GetComponent<PlayerStats>();
-        spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-        normalColor= spriteRenderer.color;
+        // spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+        // normalColor= spriteRenderer.color;
     }
     private void Start() 
     {
@@ -135,6 +139,7 @@ public class PlayerCombat : MonoBehaviour
         Vector2 lastPos = new Vector2(transform.position.x, transform.position.y);
         //instantiate lazer
         //destroy lazr object
+        PlayDashEffect();
         //teleport
         AttackWithoutForce();
         transform.position+= transform.right * currentWeaponAbillityRange;
@@ -144,6 +149,7 @@ public class PlayerCombat : MonoBehaviour
         Vector2 lastPos = new Vector2(transform.position.x, transform.position.y);
         //instantiate lazer
         //destroy lazr object
+        PlayDashEffect();
         //teleport
         AttackWithoutForce();
         transform.position+= transform.right * currentWeaponAbillityRange;
@@ -153,23 +159,41 @@ public class PlayerCombat : MonoBehaviour
         Vector2 lastPos = new Vector2(transform.position.x, transform.position.y);
         //instantiate lazer
         //destroy lazr object
+        PlayDashEffect();
         //teleport
         AttackWithoutForce();
         transform.position+= transform.right * currentWeaponAbillityRange;
     }
 
-    public float TakeDamage(float damage)
+    void PlayDashEffect()
     {
-        playerStats.TakeDamage(damage);
-        spriteRenderer.color = Color.yellow;
-        Invoke("RestoreColor",0.1f);
-        return damage;
+        firstDashEffect.GetComponent<SpriteRenderer>().enabled = true;
+        Invoke("RemoveFirstDashEffect",firstDashEffectTime);
     }
 
-    void RestoreColor()
+    void RemoveFirstDashEffect()
     {
-        spriteRenderer.color = normalColor;
+        firstDashEffect.GetComponent<SpriteRenderer>().enabled = false;
+        secondDashEffect.GetComponent<SpriteRenderer>().enabled = true;
+        Invoke("RemoveSecondDashEffect",secondDashEffectTime);
     }
+    void RemoveSecondDashEffect()
+    {
+        secondDashEffect.GetComponent<SpriteRenderer>().enabled = false;
+    }
+
+    // public float TakeDamage(float damage)
+    // {
+    //     playerStats.TakeDamage(damage);
+    //     spriteRenderer.color = Color.yellow;
+    //     Invoke("RestoreColor",0.1f);
+    //     return damage;
+    // }
+
+    // void RestoreColor()
+    // {
+    //     spriteRenderer.color = normalColor;
+    // }
 
     //Area of Effect Attack
     //add a vector2 paramiter if u need to add other directions to atk in other than right and left , add Vector2 direction

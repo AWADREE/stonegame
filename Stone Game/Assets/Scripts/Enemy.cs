@@ -187,29 +187,32 @@ public class Enemy : MonoBehaviour
 
     void StartAttacking()
     {
-        Debug.DrawRay(GetComponentInChildren<EnemyHand>().transform.position,transform.TransformDirection(Vector2.right)*enemyRange,Color.red);
-        // RaycastHit2D attackHit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), enemyRange, 1 << LayerMask.NameToLayer("Player"));
-        RaycastHit2D attackHit = Physics2D.Raycast(transform.position, enemyHand.transform.position - transform.position, enemyRange, 1 << LayerMask.NameToLayer("Player"));
+        if(isAlive)
+        {
+            Debug.DrawRay(GetComponentInChildren<EnemyHand>().transform.position,transform.TransformDirection(Vector2.right)*enemyRange,Color.red);
+            // RaycastHit2D attackHit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.right), enemyRange, 1 << LayerMask.NameToLayer("Player"));
+            RaycastHit2D attackHit = Physics2D.Raycast(transform.position, enemyHand.transform.position - transform.position, enemyRange, 1 << LayerMask.NameToLayer("Player"));
 
-        if(attackHit)
-        {            
-            attackHit.transform.GetComponent<PlayerStats>().TakeDamage(damage);
-            //apply force in the oposite direction the cated ray hit
-            Vector2 position2D= new Vector2();
-            position2D = transform.position;
-            Vector2 dir = new Vector2 ( attackHit.point.x , attackHit.point.y + angleOfPush) - position2D;
-            dir = dir.normalized;
+            if(attackHit)
+            {            
+                attackHit.transform.GetComponent<PlayerStats>().TakeDamage(damage);
+                //apply force in the oposite direction the cated ray hit
+                Vector2 position2D= new Vector2();
+                position2D = transform.position;
+                Vector2 dir = new Vector2 ( attackHit.point.x , attackHit.point.y + angleOfPush) - position2D;
+                dir = dir.normalized;
             
-            //apply forces on player
-            if(attackHit.transform.GetComponent<PlayerCombat>().IsrecoveryTimeDone())
-            {
-                Rigidbody2D rigid = attackHit.transform.GetComponent<Rigidbody2D>();//ref
-                rigid.velocity= pushBackForce*(dir.normalized);
-            }
+                //apply forces on player
+                if(attackHit.transform.GetComponent<PlayerCombat>().IsrecoveryTimeDone())
+                {
+                    Rigidbody2D rigid = attackHit.transform.GetComponent<Rigidbody2D>();//ref
+                    rigid.velocity= pushBackForce*(dir.normalized);
+                }
 
+            }
+            attacking = false;//for debugging
+            finishedAttacking = true;
         }
-        attacking = false;//for debugging
-        finishedAttacking = true;
     }
 
     public bool GetIsAlive()

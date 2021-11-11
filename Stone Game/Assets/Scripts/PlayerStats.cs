@@ -41,9 +41,11 @@ public class PlayerStats : MonoBehaviour
     float elapsed = 0f;
     PlayerCombat playerCombat;
 
+    Color playerColor;
+
 
     private void Awake() {
-
+        playerColor = GetComponent<SpriteRenderer>().color;
         // hpText = GameObject.Find("HPText").GetComponent<Text>();
         // manaText = GameObject.Find("MPText").GetComponent<Text>();
         manaSlider = GameObject.Find("Magic Slider").GetComponent<Slider>();
@@ -99,7 +101,6 @@ public class PlayerStats : MonoBehaviour
         {
             currentManaPoints = maxManaPoints;
         }
-
     }
 
 
@@ -172,6 +173,8 @@ public class PlayerStats : MonoBehaviour
         if(isAlive)
         {
             currentHealthPoints -= damage;
+            spriteRenderer.color = Color.red;
+            Invoke("RestoreColor",0.1f);
         }
     }
 
@@ -186,9 +189,17 @@ public class PlayerStats : MonoBehaviour
     //     manaText.text = (currentManaPoints.ToString()+"/"+maxManaPoints.ToString());
     // }
 
+    void RestoreColor()
+    {
+        if(isAlive)
+        {
+            spriteRenderer.color = playerColor;
+        }
+    }
+
     void Die(){
         isAlive = false;
-        playerMovement.StopMoving();
+        playerMovement.PlayerDead();
         //sfx and vfx
         Invoke("DeathColor",0.3f);
     }
@@ -211,49 +222,41 @@ public class PlayerStats : MonoBehaviour
         // damage = baseDamage*(critChance*critMulti);
         damage = baseDamage;
         playerCombat.SetTotalDamage(damage);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetRange(float weaponRange)
     {
         range = weaponRange;
         playerCombat.SetRange(range);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetatkSpeed(float weaponatkSpeed)
     {
         atkSpeed = weaponatkSpeed;
         playerCombat.SetAtkSpeed(atkSpeed);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetWindUpTime(float weaponWindUpTime)
     {
         windUpTime = weaponWindUpTime;
         playerCombat.SetWindUpTime(windUpTime);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetAbillityWindUpTime(float weaponAbillityWindUpTime)
     {
         currentWeaponAbillityWindUpTime = weaponAbillityWindUpTime;
         playerCombat.SetAbillityWindUpTime( currentWeaponAbillityWindUpTime);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetAbillityRecoveryTime(float weaponAbillityRecoveryTime)
     {
          currentWeaponAbillityRecoveryTime = weaponAbillityRecoveryTime;
         playerCombat.SetAbillityRecoveryTime(currentWeaponAbillityRecoveryTime);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetWeaponId(int weaponId)
     {
         currentWeaponId = weaponId;
         playerCombat.SetWeaponId(currentWeaponId);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetAbillityCost(int weaponAbillityCost)
     {
         currentWeaponAbillityCost = weaponAbillityCost;
         playerCombat.SetAbillityCost(currentWeaponAbillityCost);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetAbillityBaseDamage(int weaponAbillityBaseDamage)
     {
@@ -261,15 +264,13 @@ public class PlayerStats : MonoBehaviour
         //calculate total ability damage
         int totalAbilityDamage = currentWeaponAbillityBaseDamage;
         playerCombat.SetWeaponAbillityDamage(totalAbilityDamage);
-        // CalculateAndUpdateCombatStats();
     }
     public void SetAbillityBaseRange(float weaponAbillityBaseRange)
     {
         currentWeaponAbillityBaseRange = weaponAbillityBaseRange;
-        //calculate total ability damage
+        //calculate total ability Range
         float totalAbilityRange = currentWeaponAbillityBaseRange;
         playerCombat.SetWeaponAbillityRange(totalAbilityRange);
-        // CalculateAndUpdateCombatStats();
     }
 
     public int GetEquipedWeaponId()

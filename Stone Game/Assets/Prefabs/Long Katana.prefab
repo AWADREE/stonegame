@@ -24,15 +24,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2546491835169355306}
-  m_LocalRotation: {x: 0, y: 0, z: 0.9063079, w: 0.42261827}
-  m_LocalPosition: {x: -0.81, y: 0.91, z: -0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.09, y: 0.03, z: -0}
   m_LocalScale: {x: 0.8671811, y: 0.8671811, z: 0.8671811}
   m_Children:
   - {fileID: 2546491836286599422}
   - {fileID: 2546491836899162002}
   m_Father: {fileID: 8598557386089121150}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 130}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &2546491835169355304
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -152,11 +152,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1490330369
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0c80c6664500874459c2573b09da6e1a, type: 3}
-  m_Color: {r: 0.22352941, g: 0.24313726, b: 0.27450982, a: 1}
+  m_Color: {r: 0.7607844, g: 0.7607844, b: 0.7607844, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -234,11 +234,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1490330369
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 82e7b80d4bf777749adacca2e6793cef, type: 3}
-  m_Color: {r: 0.22352941, g: 0.24313726, b: 0.27450982, a: 1}
+  m_Color: {r: 0.7607844, g: 0.7607844, b: 0.7607844, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -295,20 +295,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b4ac06648ae3ea48b50bcd03c94674a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  expText: {fileID: 0}
-  levelText: {fileID: 0}
-  expSlider: {fileID: 0}
+  weaponId: 2
   weaponName: long Katana
   melee: 1
   baseDmg: 350
   baseRng: 10
-  baseSpeed: 5
+  baseSpeed: 1
+  windUpTime: 0.3
+  abillityWindUpTime: 2
+  abillityRecoveryTime: 3
+  abillityBaseDamage: 1000
+  abillityBaseRange: 15
+  abillityCost: 500
   oneHanded: 1
   twoHanded: 1
   sheath: 1
   level: 1
   equiped: 0
-  collected: 0
   exp: 0
   expNeeded: 1000
   expNeededIncreasePerLevel: 1.25
@@ -334,7 +337,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!114 &2546491835504185269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -372,8 +375,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -2.044726, y: 2.4493728}
-      - {x: -2.108016, y: 2.405738}
-      - {x: -0.44459718, y: 0.40547717}
-      - {x: 0.4388696, y: -0.64288324}
-      - {x: 0.49858236, y: -0.58466727}
+    - - {x: 3.0685887, y: -0.0137890875}
+      - {x: 3.0690928, y: 0.075277135}
+      - {x: 0.5186253, y: 0.06896934}
+      - {x: -0.8903779, y: 0.07144022}
+      - {x: -0.88939905, y: -0.009648263}

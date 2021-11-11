@@ -353,7 +353,7 @@ SpriteRenderer:
   m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 08de280cd7b2c8b49bd611bc1f9f89d5, type: 3}
-  m_Color: {r: 0.7254902, g: 0.7254902, b: 0.7254902, a: 1}
+  m_Color: {r: 0.12941177, g: 0.1254902, b: 0.12941177, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -475,7 +475,7 @@ MonoBehaviour:
   healthSlider: {fileID: 7885365846335670193}
   healthBarUI: {fileID: 7885365846348015539}
   expReward: 200
-  damage: 25
+  damage: 80
   enemyRange: 2
   initiateAtkRange: 14.5
   detectionRange: 15

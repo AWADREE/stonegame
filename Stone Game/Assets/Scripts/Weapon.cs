@@ -169,6 +169,7 @@ public class Weapon : MonoBehaviour
         //resset pos and rotation
         gameObject.transform.localPosition = new Vector3(0f,0f,0f);
         // gameObject.transform.localRotation = Quaternion.identity;
+        gameObject.transform.localEulerAngles = new Vector3(0f,0f,-309f);
         Destroy(gameObject.GetComponent<Rigidbody2D>());
         Destroy(gameObject.GetComponent<Collider2D>());
 
