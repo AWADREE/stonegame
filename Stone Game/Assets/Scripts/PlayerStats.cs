@@ -44,8 +44,8 @@ public class PlayerStats : MonoBehaviour
 
     private void Awake() {
 
-        hpText = GameObject.Find("HPText").GetComponent<Text>();
-        manaText = GameObject.Find("MPText").GetComponent<Text>();
+        // hpText = GameObject.Find("HPText").GetComponent<Text>();
+        // manaText = GameObject.Find("MPText").GetComponent<Text>();
         manaSlider = GameObject.Find("Magic Slider").GetComponent<Slider>();
         healthSlider = GameObject.Find("Health Slider").GetComponent<Slider>();
         playerMovement = GetComponent<PlayerMovementController>();
@@ -67,8 +67,8 @@ public class PlayerStats : MonoBehaviour
         healthSlider.value = CalculateHealth();
         manaSlider.value = CalculateMana();
 
-        UpdateHPText();
-        UpdateMpText();
+        // UpdateHPText();
+        // UpdateMpText();
 
         if(currentHealthPoints <= 0)
         {
@@ -176,15 +176,15 @@ public class PlayerStats : MonoBehaviour
     }
 
     //update HP profile text
-    void UpdateHPText()
-    {
-        hpText.text = (currentHealthPoints.ToString()+"/"+maxHealthPoints.ToString());
-    }
+    // void UpdateHPText()
+    // {
+    //     hpText.text = (currentHealthPoints.ToString()+"/"+maxHealthPoints.ToString());
+    // }
 
-    void UpdateMpText()
-    {
-        manaText.text = (currentManaPoints.ToString()+"/"+maxManaPoints.ToString());
-    }
+    // void UpdateMpText()
+    // {
+    //     manaText.text = (currentManaPoints.ToString()+"/"+maxManaPoints.ToString());
+    // }
 
     void Die(){
         isAlive = false;
