@@ -47,20 +47,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4b4ac06648ae3ea48b50bcd03c94674a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  expText: {fileID: 0}
-  levelText: {fileID: 0}
-  expSlider: {fileID: 0}
+  weaponId: 0
   weaponName: Wooden Sword
   melee: 1
-  baseDmg: 10
+  baseDmg: 50
   baseRng: 1
-  baseSpeed: 5
+  baseSpeed: 0.5
+  windUpTime: 0.1
+  abillityWindUpTime: 1.5
+  abillityRecoveryTime: 1.25
+  abillityBaseDamage: 200
+  abillityBaseRange: 9
+  abillityCost: 500
   oneHanded: 1
   twoHanded: 1
   sheath: 1
   level: 1
   equiped: 0
-  collected: 0
   exp: 0
   expNeeded: 1000
   expNeededIncreasePerLevel: 1.25
@@ -86,7 +89,7 @@ Rigidbody2D:
   m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
-  m_Constraints: 4
+  m_Constraints: 0
 --- !u!114 &6368718365264144986
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,11 +127,11 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.96811724, y: 1.4084285}
-      - {x: -1.0960035, y: 1.3037732}
-      - {x: -0.36923498, y: 0.43060338}
-      - {x: 0.25584614, y: -0.29470533}
-      - {x: 0.36938906, y: -0.19341576}
+    - - {x: -0.6865306, y: 0.113404155}
+      - {x: -0.690711, y: -0.037731424}
+      - {x: -0.12452978, y: -0.028419822}
+      - {x: 1.4028989, y: -0.033074334}
+      - {x: 1.4059386, y: 0.11756335}
 --- !u!1 &6368718364719032673
 GameObject:
   m_ObjectHideFlags: 0
@@ -153,15 +156,15 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6368718364719032673}
-  m_LocalRotation: {x: 0, y: 0, z: 0.9063079, w: 0.42261827}
-  m_LocalPosition: {x: -0.36, y: 0.56, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.36, y: 0.04, z: 0}
   m_LocalScale: {x: 0.69972, y: 0.69972, z: 0.69972}
   m_Children:
   - {fileID: 6368718365557539633}
   - {fileID: 6368718365965674648}
   m_Father: {fileID: 891986691716079761}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 130}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &6368718364719032675
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -281,11 +284,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1490330369
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 0c80c6664500874459c2573b09da6e1a, type: 3}
-  m_Color: {r: 0.22352941, g: 0.24313726, b: 0.27450982, a: 1}
+  m_Color: {r: 0.7607844, g: 0.7607844, b: 0.7607844, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -363,11 +366,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: -1490330369
+  m_SortingLayer: 4
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 82e7b80d4bf777749adacca2e6793cef, type: 3}
-  m_Color: {r: 0.22352941, g: 0.24313726, b: 0.27450982, a: 1}
+  m_Color: {r: 0.7607844, g: 0.7607844, b: 0.7607844, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
