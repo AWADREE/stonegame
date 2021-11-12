@@ -6,12 +6,14 @@ using UnityEngine.UI;
 public class PlayerStats : MonoBehaviour
 {   
     //basic stats
-
     [SerializeField] float maxHealthPoints =1000f;
     [SerializeField] float maxManaPoints =1000f;
     [SerializeField] float hpRegin =10f;
     [SerializeField] bool isAlive = true;
     [SerializeField] int currency = 0; //serialized for debugging 
+    [SerializeField] int currencyGold = 0; //serialized for debugging 
+    [SerializeField] int currencySilver = 0; //serialized for debugging 
+    [SerializeField] int currencyCopper = 0; //serialized for debugging 
     //combat Stats
     float baseDamage;
     float damage;
@@ -30,6 +32,9 @@ public class PlayerStats : MonoBehaviour
     [SerializeField] float currentHealthPoints;
     [SerializeField] float currentManaPoints;
 
+    Text currencyGoldText;
+    Text currencySilverText;
+    Text currencyCopperText;
     Text hpText;
     Text manaText;
     Slider healthSlider;
@@ -48,6 +53,10 @@ public class PlayerStats : MonoBehaviour
         playerColor = GetComponent<SpriteRenderer>().color;
         // hpText = GameObject.Find("HPText").GetComponent<Text>();
         // manaText = GameObject.Find("MPText").GetComponent<Text>();
+        currencyGoldText = GameObject.Find("Gold Text").GetComponent<Text>();
+        currencySilverText = GameObject.Find("Silver Text").GetComponent<Text>();
+        currencyCopperText = GameObject.Find("Copper Text").GetComponent<Text>();
+
         manaSlider = GameObject.Find("Magic Slider").GetComponent<Slider>();
         healthSlider = GameObject.Find("Health Slider").GetComponent<Slider>();
         playerMovement = GetComponent<PlayerMovementController>();
@@ -61,6 +70,7 @@ public class PlayerStats : MonoBehaviour
         healthSlider.value = CalculateHealth();
         currentManaPoints = maxManaPoints;
         manaSlider.value = CalculateMana();
+        UpdateCurrencyText();
     }
 
     private void Update() 
@@ -189,6 +199,13 @@ public class PlayerStats : MonoBehaviour
     //     manaText.text = (currentManaPoints.ToString()+"/"+maxManaPoints.ToString());
     // }
 
+    void UpdateCurrencyText()
+    {
+        currencyGoldText.text = (currencyGold.ToString());
+        currencySilverText.text = (currencySilver.ToString());
+        currencyCopperText.text = (currencyCopper.ToString());
+    }
+
     void RestoreColor()
     {
         if(isAlive)
@@ -213,6 +230,21 @@ public class PlayerStats : MonoBehaviour
     public void IncreaseCurrencyBy(int newCurrency)
     {
         currency += newCurrency;
+        if(currency !=0)
+        {
+            currencyGold = currency /10000;
+            currencySilver = (currency -(currencyGold*10000))/100;
+            currencyCopper = currency - (currencyGold*10000)-(currencySilver*100);
+        }
+        else
+        {
+            currencyGold = 0;
+            currencySilver = 0;
+            currencyCopper = 0;
+        }
+
+        //update text
+        UpdateCurrencyText();
     }
 
     public void SetBaseDamage(float weaponDamage)
