@@ -484,6 +484,15 @@ MonoBehaviour:
   moveSpeed: 7
   pushBackForce: 20
   angleOfPush: 1
+  drops:
+  - {fileID: 7154076026154988707, guid: 4c0c1a215d9adbf40acfc239d1cfd374, type: 3}
+  - {fileID: 8598557386089121121, guid: 188d7eb7426c77b4ebb125c53c694a43, type: 3}
+  dropChances:
+  - 0.1
+  - 0.1
+  coinValueFrom: 1
+  coinValueTo: 20
+  coinDropValue: 0
   weapon: {fileID: 0}
   chassing: 0
   TimeBeforeDeath: 1.1

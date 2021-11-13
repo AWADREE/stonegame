@@ -19,6 +19,12 @@ public class Enemy : MonoBehaviour
     [SerializeField] float moveSpeed= 10f;
     [SerializeField] float pushBackForce;
     [SerializeField] float angleOfPush;
+    [SerializeField] GameObject[] drops;
+    [SerializeField] float[] dropChances;  //0.1 = 10%
+    [SerializeField] int coinValueFrom;
+    [SerializeField] int coinValueTo;
+    [SerializeField] int coinDropValue; //for debugging
+
 
     // [SerializeField] float pushUpForce;
     [SerializeField] Weapon weapon; //serizlised for debugging
@@ -43,6 +49,7 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        coinDropValue = Random.Range(coinValueFrom, coinValueTo);
         currentHealthPoints = maxHealthPoints;
         healthSlider.value = calculateHealth();
     }
@@ -161,18 +168,38 @@ public class Enemy : MonoBehaviour
     {
         Invoke("DestroyThisObject",TimeBeforeDeath );
     }
+
     public void DestroyThisObject()
     {
+        int i=0;
+        foreach (GameObject drop in drops)
+        {
+            if(i< drops.Length)
+            {
+                if(Random.Range(0f,1f)<=dropChances[i])
+                {
+                    InstantiateDrop(drops[i]);
+                }
+            }
+            i++;
+        }
         Destroy(gameObject);
     }
-    // void GiveWeaponExp()
-    // {
-    //     weapon.GetExp(expReward);
-    // }
+
+
+    void InstantiateDrop(GameObject drop)
+    {
+        Instantiate(drop,transform.position,Quaternion.identity);
+    }
+
+
+    public int GetCoinDropValue()
+    {
+        return coinDropValue;
+    }
 
     public float GetEnemyExp()
     {
-        // Debug.Log("enemy exp got");
         if(!givenExp)
         {
             givenExp = true;
