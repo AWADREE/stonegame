@@ -223,6 +223,7 @@ public class PlayerCombat : MonoBehaviour
                         if(weaponTemp.IsEquiped())
                         {
                             weaponTemp.GetExp(currentEnemy.GetEnemyExp());
+                            playerStats.IncreaseCurrencyBy(currentEnemy.GetCoinDropValue());
                             currentEnemy.killObject();
                         }
                     }
@@ -260,6 +261,7 @@ public class PlayerCombat : MonoBehaviour
                     if(weaponTemp.IsEquiped())
                     {
                         weaponTemp.GetExp(currentEnemy.GetEnemyExp());
+                        playerStats.IncreaseCurrencyBy(currentEnemy.GetCoinDropValue());
                         currentEnemy.killObject();
                     }
                 }
@@ -299,6 +301,7 @@ public class PlayerCombat : MonoBehaviour
                         if(weaponTemp.IsEquiped())
                         {
                             weaponTemp.GetExp(currentEnemy.GetEnemyExp());
+                            playerStats.IncreaseCurrencyBy(currentEnemy.GetCoinDropValue());
                             currentEnemy.killObject();
                         }
                     }
