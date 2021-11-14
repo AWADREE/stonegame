@@ -92,6 +92,7 @@ public class Weapon : MonoBehaviour
     {
         level++;
         baseDmg +=20f;
+        abillityBaseDamage+=40;
         exp = 0f;
         expNeeded *= expNeededIncreasePerLevel;
         sendWeaponStats();

@@ -18,6 +18,11 @@ public class PlayerCombat : MonoBehaviour
     [SerializeField] GameObject secondDashEffect;
     [SerializeField] float firstDashEffectTime= 0.01f;
     [SerializeField] float secondDashEffectTime= 0.01f;
+    [SerializeField] float healingAbillityAmount;
+    [SerializeField] float healingAbillityCost;
+    [SerializeField] float healingAbillityWindUpTime;
+    [SerializeField] ParticleSystem healingeffect;
+    [SerializeField] float healingAbillityRecoveryTime; //must be more than winduptime
     bool canAtk = true;
     float timeSinceLastAtk =0f;
     float damage;//total damge acctually applied
@@ -30,8 +35,9 @@ public class PlayerCombat : MonoBehaviour
     float currentWeaponAbillityWindUpTime;
     int currentWeaponAbillityDamage;
     float currentWeaponAbillityRange;
-    [SerializeField] float timeSinceLastAbillityCast =0f; //for debugging
+    float timeSinceLastAbillityCast =0f; //for debugging
     float abillityRecoveryTime;
+    bool castingHealing = false;
 
     private void Awake() 
     {
@@ -56,10 +62,23 @@ public class PlayerCombat : MonoBehaviour
 
         timeSinceLastAbillityCast +=Time.deltaTime;
 
-        if(timeSinceLastAbillityCast>= abillityRecoveryTime)
+        if(!castingHealing)
         {
-            recoveryTimeDone = true;
-            playerMovement.StartMoving();
+            if(timeSinceLastAbillityCast>= abillityRecoveryTime)
+            {
+                recoveryTimeDone = true;
+                playerMovement.StartMoving();
+            }
+        }
+
+        if(castingHealing)
+        {
+            if(timeSinceLastAbillityCast>= healingAbillityRecoveryTime)
+            {
+                recoveryTimeDone = true;
+                playerMovement.StartMoving();
+                castingHealing = false;
+            }
         }
 
         if(recoveryTimeDone)
@@ -76,7 +95,7 @@ public class PlayerCombat : MonoBehaviour
                     Invoke("WoodenSwordAbillity", currentWeaponAbillityWindUpTime);
                 }
             }
-
+            else
             if(currentWeaponId == 1 && Input.GetKeyDown(KeyCode.C))//waepon id 1 is for the katana
             {
                 if(playerStats.HasEnoughMana(currentWeaponAbillityCost))
@@ -88,7 +107,7 @@ public class PlayerCombat : MonoBehaviour
                     Invoke("KatanaAbillity", currentWeaponAbillityWindUpTime);
                 }
             }
-
+            else
             if(currentWeaponId == 2 && Input.GetKeyDown(KeyCode.C))//waepon id 2 is for the long katana
             {
                 if(playerStats.HasEnoughMana(currentWeaponAbillityCost))
@@ -100,6 +119,24 @@ public class PlayerCombat : MonoBehaviour
                     Invoke("LongKatanaAbillity", currentWeaponAbillityWindUpTime);
                 }
             }
+            else
+            if(Input.GetKeyDown(KeyCode.Z))
+            {
+                if(!playerStats.IsHealthMax())
+                {
+                    if(playerStats.HasEnoughMana(healingAbillityCost))
+                    {   
+                        //play abillity animation
+                        healingeffect.Play();
+                        playerMovement.StopMoving();
+                        recoveryTimeDone = false;
+                        timeSinceLastAbillityCast =0f;
+                        castingHealing= true;
+                        Invoke("HealingAbillity", healingAbillityWindUpTime);
+                    }
+                }
+            }
+
         }
 
 
@@ -163,6 +200,10 @@ public class PlayerCombat : MonoBehaviour
         //teleport
         AttackWithoutForce();
         transform.position+= transform.right * currentWeaponAbillityRange;
+    }
+    void HealingAbillity()
+    {
+        playerStats.Heal(healingAbillityAmount);
     }
 
     void PlayDashEffect()

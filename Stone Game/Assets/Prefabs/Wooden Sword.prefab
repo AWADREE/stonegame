@@ -50,13 +50,13 @@ MonoBehaviour:
   weaponId: 0
   weaponName: Wooden Sword
   melee: 1
-  baseDmg: 50
-  baseRng: 1
+  baseDmg: 100
+  baseRng: 3
   baseSpeed: 0.5
   windUpTime: 0.1
   abillityWindUpTime: 1.5
-  abillityRecoveryTime: 1.25
-  abillityBaseDamage: 200
+  abillityRecoveryTime: 1.7
+  abillityBaseDamage: 500
   abillityBaseRange: 9
   abillityCost: 500
   oneHanded: 1

@@ -304,7 +304,7 @@ MonoBehaviour:
   windUpTime: 0.1
   abillityWindUpTime: 1
   abillityRecoveryTime: 1.5
-  abillityBaseDamage: 500
+  abillityBaseDamage: 1000
   abillityBaseRange: 10
   abillityCost: 500
   oneHanded: 1

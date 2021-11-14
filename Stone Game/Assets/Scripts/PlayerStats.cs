@@ -48,6 +48,8 @@ public class PlayerStats : MonoBehaviour
 
     Color playerColor;
 
+    bool healthIsMax = true;
+
 
     private void Awake() {
         playerColor = GetComponent<SpriteRenderer>().color;
@@ -86,6 +88,15 @@ public class PlayerStats : MonoBehaviour
         {
             Die();
             currentHealthPoints= 0;
+        }
+
+        if(currentHealthPoints >= maxHealthPoints)
+        {
+            healthIsMax = true;
+        }
+        else
+        {
+            healthIsMax = false;
         }
 
         //every second effects
@@ -186,6 +197,11 @@ public class PlayerStats : MonoBehaviour
             spriteRenderer.color = Color.red;
             Invoke("RestoreColor",0.1f);
         }
+    }
+
+    public bool IsHealthMax()
+    {
+        return healthIsMax;
     }
 
     //update HP profile text

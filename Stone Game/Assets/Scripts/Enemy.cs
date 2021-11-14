@@ -25,9 +25,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] int coinValueTo;
     [SerializeField] int coinDropValue; //for debugging
 
-
+    SpawnPoint mySpawnPoint;
     // [SerializeField] float pushUpForce;
-    [SerializeField] Weapon weapon; //serizlised for debugging
+    Weapon weapon; //serizlised for debugging
     [SerializeField] bool chassing = false;       //serilized for debuging
     [SerializeField] float TimeBeforeDeath =1.1f;
     [SerializeField] Color normalColor;
@@ -49,6 +49,7 @@ public class Enemy : MonoBehaviour
 
     void Start()
     {
+        mySpawnPoint = GetComponentInParent<SpawnPoint>();
         coinDropValue = Random.Range(coinValueFrom, coinValueTo);
         currentHealthPoints = maxHealthPoints;
         healthSlider.value = calculateHealth();
@@ -183,6 +184,7 @@ public class Enemy : MonoBehaviour
             }
             i++;
         }
+        mySpawnPoint.EnemyIsDead();
         Destroy(gameObject);
     }
 
