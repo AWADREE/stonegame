@@ -493,7 +493,7 @@ MonoBehaviour:
   coinValueFrom: 1
   coinValueTo: 20
   coinDropValue: 0
-  weapon: {fileID: 0}
+  respawnTime: 5
   chassing: 0
   TimeBeforeDeath: 1.1
   normalColor: {r: 0, g: 0, b: 0, a: 0}
